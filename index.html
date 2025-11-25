@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OjekX Driver React (Ringan)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-muted: #eef3ff;
+        --text-main: #0b0b0f;
+        --text-muted: #6b7280;
+        --blue: #3b82f6;
+        --blue-neon: #60a5fa;
+        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        --btn-glow: 0 0 15px rgba(96, 165, 250, 0.9),
+          0 0 35px rgba(59, 130, 246, 0.65);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #e0f2ff 0, #ffffff 45%, #eef3ff 100%);
+        color: var(--text-main);
+      }
+
+      .app-root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page-header {
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .page-header-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+      }
+
+      .page-header-sub {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .logo-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        border: 2px solid var(--blue-neon);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: var(--blue-neon);
+        box-shadow: 0 0 12px rgba(96, 165, 250, 0.7);
+        background: #020617;
+      }
+
+      .page-main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      @media (min-width: 768px) {
+        .container {
+          max-width: 640px;
+        }
+      }
+
+      .card {
+        background: radial-gradient(circle at top, #f4f6ff 0, #ffffff 55%);
+        border-radius: 20px;
+        padding: 1.5rem 1.4rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+      }
+
+      .hero-title {
+        font-size: 1.9rem;
+        font-weight: 900;
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-highlight {
+        background: linear-gradient(to right, #3b82f6, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero-sub {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        line-height: 1.5rem;
+        margin-bottom: 1.1rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      @media (min-width: 480px) {
+        .hero-actions {
+          flex-direction: row;
+        }
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 0.7rem 1.1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s,
+          color 0.15s, border-color 0.15s;
+      }
+
+      .btn-block {
+        width: 100%;
+      }
+
+      .btn-primary {
+        background: #020617;
+        color: #f9fafb;
+        box-shadow: var(--btn-glow);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 0 18px #60a5fa, 0 0 40px #3b82f6;
+        transform: translateY(-2px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--blue);
+        border: 1px solid var(--blue-neon);
+        box-shadow: 0 0 10px rgba(191, 219, 254, 0.5);
+      }
+
+      .btn-outline:hover {
+        background: rgba(15, 23, 42, 0.9);
+        color: #e5f0ff;
+        box-shadow: var(--btn-glow);
+        transform: translateY(-2px);
+      }
+
+      .section-title {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+      }
+
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.7rem 0.8rem;
+        border-radius: 0.7rem;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        font-size: 0.9rem;
+        outline: none;
+        background: rgba(15, 23, 42, 0.02);
+        color: var(--text-main);
+      }
+
+      input:focus {
+        border-color: var(--blue-neon);
+        box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.6);
+        background: #ffffff;
+      }
+
+      .form-group {
+        margin-bottom: 0.85rem;
+        text-align: left;
+      }
+
+      .form-sub {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1.1rem;
+      }
+
+      .small-text {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.25rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        background: rgba(15, 23, 42, 0.9);
+        color: #e5f0ff;
+        box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
+      }
+
+      footer {
+        margin-top: 1.2rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+      }
+
+      .alert {
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.8rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .alert-error {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+
+      .alert-success {
+        background: #ecfdf3;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- React & ReactDOM dari CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel untuk JSX di browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const API_BASE = "http://localhost:3000";
+
+  function DriverApp() {
+    const [screen, setScreen] = useState("landing"); // landing | login | register | dashboard
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [token, setToken] = useState(null);
+    const [profile, setProfile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null); // {type:'error'|'success', text:''}
+
+    // status online/offline driver
+    const [isOnline, setIsOnline] = useState(false);
+
+    // Cek token + status online di localStorage saat awal
+    useEffect(() => {
+      const savedToken = localStorage.getItem("ojekx_token");
+      if (savedToken) {
+        setToken(savedToken);
+        fetchProfile(savedToken);
+      }
+
+      const savedStatus = localStorage.getItem("ojekx_driver_status");
+      if (savedStatus === "online") {
+        setIsOnline(true);
+      }
+    }, []);
+
+    function showMessage(type, text) {
+      setMessage({ type, text });
+      setTimeout(() => setMessage(null), 2500);
+    }
+
+    async function fetchProfile(currentToken) {
+      try {
+        setLoading(true);
+        const res = await fetch(API_BASE + "/profile", {
+          headers: {
+            Authorization: "Bearer " + currentToken,
+          },
+        });
+        if (!res.ok) {
+          showMessage("error", "Gagal ambil profile. Coba login ulang.");
+          setProfile(null);
+          return;
+        }
+        const data = await res.json();
+        setProfile(data);
+        setScreen("dashboard");
+      } catch (err) {
+        showMessage("error", "Error koneksi ke backend.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      setLoading(true);
+      setMessage(null);
+      try {
+        const res = await fetch(API_BASE + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            role: "driver",
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showMessage("error", data.message || "Register gagal");
+          return;
+        }
+        showMessage("success", "Register berhasil, silakan login.");
+        setScreen("login");
+      } catch (err) {
+        showMessage("error", "Error koneksi ke backend.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      setLoading(true);
+      setMessage(null);
+      try {
+        const res = await fetch(API_BASE + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showMessage("error", data.message || "Login gagal");
+          return;
+        }
+        showMessage("success", "Login berhasil.");
+        setToken(data.token);
+        localStorage.setItem("ojekx_token", data.token);
+        fetchProfile(data.token);
+      } catch (err) {
+        showMessage("error", "Error koneksi ke backend.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function handleLogout() {
+      setToken(null);
+      setProfile(null);
+      localStorage.removeItem("ojekx_token");
+      setScreen("landing");
+      // Saat logout, status dianggap offline
+      setIsOnline(false);
+      localStorage.setItem("ojekx_driver_status", "offline");
+      showMessage("success", "Logout berhasil.");
+    }
+
+    function toggleOnlineStatus() {
+      const next = !isOnline;
+      setIsOnline(next);
+      localStorage.setItem("ojekx_driver_status", next ? "online" : "offline");
+      showMessage(
+        "success",
+        next
+          ? "Status driver: ONLINE (siap terima order)"
+          : "Status driver: OFFLINE (tidak terima order)"
+      );
+    }
+
+    // ====== RENDER SECTION ======
+
+    function renderLanding() {
+      return (
+        <section className="card">
+          <h1 className="hero-title">
+            Dashboard <span className="hero-highlight">Driver</span>
+          </h1>
+          <p className="hero-sub">
+            Kelola status kerja, lihat peta area, dan terima order dengan tampilan
+            putih bersih dan neon biru modern.
+          </p>
+          <div className="hero-actions">
+            <button
+              className="btn btn-primary btn-block"
+              onClick={() => setScreen("login")}
+            >
+              Masuk Driver
+            </button>
+            <button
+              className="btn btn-outline btn-block"
+              onClick={() => setScreen("register")}
+            >
+              Daftar Driver
+            </button>
+          </div>
+          <div style={{ marginTop: "0.9rem" }}>
+            <span className="pill">Mode demo • terhubung ke backend lokal</span>
+          </div>
+        </section>
+      );
+    }
+
+    function renderRegister() {
+      return (
+        <section className="card">
+          <h2 className="hero-title" style={{ fontSize: "1.5rem" }}>
+            Daftar <span className="hero-highlight">Driver</span>
+          </h2>
+          <p className="form-sub">
+            Isi data sederhana di bawah ini. Data akan disimpan di{" "}
+            <code>users.json</code> backend kamu.
+          </p>
+          <form onSubmit={handleRegister}>
+            <div className="form-group">
+              <label>Nama Lengkap</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="contoh: Dika Pratama"
+              />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="driver1@test.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="minimal 6 karakter"
+              />
+            </div>
+            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+              {loading ? "Mendaftar..." : "Daftar Driver"}
+            </button>
+          </form>
+          <p className="small-text" style={{ marginTop: "0.8rem" }}>
+            Sudah punya akun?{" "}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen("login");
+              }}
+            >
+              Masuk di sini
+            </a>
+          </p>
+        </section>
+      );
+    }
+
+    function renderLogin() {
+      return (
+        <section className="card">
+          <h2 className="hero-title" style={{ fontSize: "1.5rem" }}>
+            Masuk <span className="hero-highlight">Driver</span>
+          </h2>
+          <p className="form-sub">
+            Gunakan email & password yang sudah kamu daftarkan. Setelah login
+            berhasil, profil driver akan muncul di dashboard.
+          </p>
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="driver1@test.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
+              {loading ? "Masuk..." : "Masuk"}
+            </button>
+          </form>
+          <p className="small-text" style={{ marginTop: "0.8rem" }}>
+            Belum punya akun?{" "}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setScreen("register");
+              }}
+            >
+              Daftar driver dulu
+            </a>
+          </p>
+        </section>
+      );
+    }
+
+    function renderDashboard() {
+      const statusLabel = isOnline ? "ONLINE" : "OFFLINE";
+      const statusColor = isOnline ? "#22c55e" : "#f97316";
+      const statusBg = isOnline ? "rgba(34,197,94,0.15)" : "rgba(248,113,113,0.15)";
+
+      return (
+        <section className="card">
+          <h2 className="hero-title" style={{ fontSize: "1.5rem" }}>
+            Halo,{" "}
+            <span className="hero-highlight">
+              {profile ? profile.name : "Driver"}
+            </span>
+          </h2>
+          <p className="form-sub">
+            Ini dashboard sederhana. Nanti bisa kamu kembangkan untuk:
+            <br />• status online/offline, <br />• list order, <br />• maps, dll.
+          </p>
+
+          {/* STATUS ONLINE/OFFLINE */}
+          <div style={{ marginBottom: "0.9rem" }}>
+            <div className="section-title">Status driver</div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "0.8rem",
+                marginTop: "0.4rem",
+                flexWrap: "wrap",
+              }}
+            >
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.35rem 0.9rem",
+                  borderRadius: "999px",
+                  background: statusBg,
+                  border: "1px solid " + statusColor,
+                  color: statusColor,
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                }}
+              >
+                <span
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "999px",
+                    background: statusColor,
+                    boxShadow: `0 0 8px ${statusColor}`,
+                  }}
+                ></span>
+                <span>{statusLabel}</span>
+              </div>
+
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={toggleOnlineStatus}
+                style={{ minWidth: "150px" }}
+              >
+                {isOnline ? "Set Offline" : "Mulai Online"}
+              </button>
+            </div>
+            <p className="small-text" style={{ marginTop: "0.4rem" }}>
+              • ONLINE = siap menerima order. <br />
+              • OFFLINE = tidak menerima order.
+            </p>
+          </div>
+
+          {/* PROFIL DRIVER */}
+          <div style={{ marginBottom: "0.9rem" }}>
+            <div className="section-title">Profil Driver</div>
+            <p className="small-text">
+              Nama: <b>{profile?.name}</b>
+              <br />
+              Email: <b>{profile?.email}</b>
+              <br />
+              Role: <b>{profile?.role}</b>
+            </p>
+          </div>
+
+          {/* MAPS DUMMY */}
+          <div style={{ marginBottom: "0.9rem" }}>
+            <div className="section-title">Area Maps (dummy)</div>
+            <div
+              style={{
+                height: "200px",
+                borderRadius: "14px",
+                background: "rgba(15,23,42,0.85)",
+                border: "1px solid rgba(148,163,184,0.4)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#e2e8f0",
+                fontSize: "0.85rem",
+                boxShadow: "0 0 14px rgba(59,130,246,0.4)",
+              }}
+            >
+              Di sini nanti bisa diisi komponen Maps (Leaflet / lain-lain)
+            </div>
+          </div>
+
+          <button className="btn btn-outline btn-block" onClick={handleLogout}>
+            Logout
+          </button>
+        </section>
+      );
+    }
+
+    return (
+      <div className="app-root">
+        <header className="page-header">
+          <div>
+            <div className="page-header-title">OjekX Driver</div>
+            <div className="page-header-sub">
+              React ringan, terhubung ke backend Node lokal.
+            </div>
+          </div>
+          <div className="logo-dot">DX</div>
+        </header>
+
+        <main className="page-main">
+          <div className="container">
+            {message && (
+              <div
+                className={
+                  "alert " +
+                  (message.type === "error" ? "alert-error" : "alert-success")
+                }
+              >
+                {message.text}
+              </div>
+            )}
+
+            {screen === "landing" && renderLanding()}
+            {screen === "register" && renderRegister()}
+            {screen === "login" && renderLogin()}
+            {screen === "dashboard" && renderDashboard()}
+
+            <footer>
+              © 2025 OjekX Driver • Mode Demo • Frontend React (CDN) + Backend Node
+            </footer>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<DriverApp />);
+</script>
