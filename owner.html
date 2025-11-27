@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OjekX Owner Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-muted: #eef3ff;
+        --text-main: #0b0b0f;
+        --text-muted: #6b7280;
+        --blue: #3b82f6;
+        --blue-neon: #60a5fa;
+        --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        --btn-glow: 0 0 15px rgba(96, 165, 250, 0.9),
+          0 0 35px rgba(59, 130, 246, 0.65);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Poppins",
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #e0f2ff 0, #ffffff 45%, #eef3ff 100%);
+        color: var(--text-main);
+      }
+
+      .app-root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page-header {
+        padding: 1rem 1.25rem;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .page-header-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+      }
+
+      .page-header-sub {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+      }
+
+      .logo-dot {
+        min-width: 34px;
+        min-height: 34px;
+        border-radius: 999px;
+        border: 2px solid var(--blue-neon);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: var(--blue-neon);
+        box-shadow: 0 0 12px rgba(96, 165, 250, 0.7);
+        background: #020617;
+      }
+
+      .page-main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .card {
+        background: radial-gradient(circle at top, #f4f6ff 0, #ffffff 55%);
+        border-radius: 20px;
+        padding: 1.3rem 1.2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(226, 232, 240, 0.9);
+      }
+
+      .hero-title {
+        font-size: 1.7rem;
+        font-weight: 900;
+        margin-bottom: 0.7rem;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-highlight {
+        background: linear-gradient(to right, #3b82f6, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero-sub {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.5rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .section-title {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+      }
+
+      .small-text {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-top: 0.4rem;
+      }
+
+      .summary-card {
+        padding: 0.55rem 0.6rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(209, 213, 219, 0.9);
+        box-shadow: 0 8px 18px rgba(148, 163, 184, 0.35);
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-height: 60px;
+      }
+
+      .summary-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      .summary-value {
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .summary-sub {
+        font-size: 0.7rem;
+        color: #9ca3af;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s,
+          color 0.15s, border-color 0.15s;
+        background: transparent;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--blue);
+        border: 1px solid var(--blue-neon);
+        box-shadow: 0 0 10px rgba(191, 219, 254, 0.5);
+      }
+
+      .btn-outline:hover {
+        background: rgba(15, 23, 42, 0.9);
+        color: #e5f0ff;
+        box-shadow: var(--btn-glow);
+        transform: translateY(-2px);
+      }
+
+      .btn-block {
+        width: 100%;
+      }
+
+      .filter-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+        margin-bottom: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      select {
+        padding: 0.4rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        font-size: 0.8rem;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .alert {
+        padding: 0.6rem 0.8rem;
+        border-radius: 0.8rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .alert-error {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+
+      .alert-success {
+        background: #ecfdf3;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+
+      footer {
+        margin: 0 1rem 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">Loading...</div>
+
+    <!-- React & ReactDOM dari CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+      const API_BASE = "http://localhost:3000"; // ganti IP kalau backend di HP lain
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      function OwnerApp() {
+        const [orders, setOrders] = useState([]);
+        const [stats, setStats] = useState({
+          totalOrder: 0,
+          totalOwner: 0,
+          totalDriver: 0,
+        });
+        const [loading, setLoading] = useState(false);
+        const [message, setMessage] = useState(null);
+        const [filterService, setFilterService] = useState("all");
+        const [filterStatus, setFilterStatus] = useState("all");
+
+        useEffect(function () {
+          refreshData();
+        }, []);
+
+        function showMessage(type, text) {
+          setMessage({ type: type, text: text });
+          setTimeout(function () {
+            setMessage(null);
+          }, 2500);
+        }
+
+        async function refreshData() {
+          try {
+            setLoading(true);
+
+            const [statsRes, ordersRes] = await Promise.all([
+              fetch(API_BASE + "/stats/owner"),
+              fetch(API_BASE + "/orders/all"),
+            ]);
+
+            if (!statsRes.ok) {
+              showMessage("error", "Gagal ambil statistik owner.");
+            } else {
+              const statsData = await statsRes.json();
+              setStats(statsData);
+            }
+
+            if (!ordersRes.ok) {
+              showMessage("error", "Gagal ambil daftar order.");
+            } else {
+              const ordersData = await ordersRes.json();
+              setOrders(ordersData.orders || []);
+            }
+
+            if (statsRes.ok && ordersRes.ok) {
+              showMessage("success", "Data owner diperbarui.");
+            }
+          } catch (err) {
+            console.log(err);
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        // Filter orders di tampilan
+        const filteredOrders = orders.filter(function (order) {
+          if (filterService !== "all" && order.serviceType !== filterService) {
+            return false;
+          }
+          if (filterStatus !== "all" && order.status !== filterStatus) {
+            return false;
+          }
+          return true;
+        });
+
+        // Hitung ringkasan kecil per filter di UI (tanpa ganggu stats global)
+        let totalOwnerFiltered = 0;
+        let totalDriverFiltered = 0;
+        filteredOrders.forEach(function (o) {
+          totalOwnerFiltered += Number(o.feeOwner || 0);
+          totalDriverFiltered += Number(o.feeDriver || 0);
+        });
+
+        return (
+          <section className="card">
+            {message && (
+              <div
+                className={
+                  "alert " +
+                  (message.type === "error" ? "alert-error" : "alert-success")
+                }
+              >
+                {message.text}
+              </div>
+            )}
+
+            <h1 className="hero-title">
+              OjekX <span className="hero-highlight">Owner</span>
+            </h1>
+            <p className="hero-sub">
+              Panel pemilik/aplikator untuk memantau total order dan fee 20% dari
+              setiap transaksi. Angka di bawah diambil langsung dari data order
+              backend.
+            </p>
+
+            {/* RINGKASAN UTAMA */}
+            <div style={{ marginBottom: "0.9rem" }}>
+              <div className="section-title">Ringkasan pendapatan</div>
+              <div className="summary-grid">
+                <div className="summary-card">
+                  <div className="summary-label">Total order</div>
+                  <div className="summary-value">{stats.totalOrder || 0}</div>
+                  <div className="summary-sub">Semua layanan</div>
+                </div>
+                <div className="summary-card">
+                  <div className="summary-label">Fee owner</div>
+                  <div className="summary-value">
+                    {formatRupiah(stats.totalOwner || 0)}
+                  </div>
+                  <div className="summary-sub">20% dari semua order</div>
+                </div>
+                <div className="summary-card">
+                  <div className="summary-label">Fee driver</div>
+                  <div className="summary-value">
+                    {formatRupiah(stats.totalDriver || 0)}
+                  </div>
+                  <div className="summary-sub">80% dibagikan ke driver</div>
+                </div>
+              </div>
+            </div>
+
+            {/* FILTER & REFRESH */}
+            <div style={{ marginBottom: "0.7rem" }}>
+              <div className="section-title">Filter & aksi</div>
+              <div className="filter-row">
+                <select
+                  value={filterService}
+                  onChange={function (e) {
+                    setFilterService(e.target.value);
+                  }}
+                >
+                  <option value="all">Semua layanan</option>
+                  <option value="bike">Bike</option>
+                  <option value="car">Car</option>
+                  <option value="food">Food</option>
+                </select>
+
+                <select
+                  value={filterStatus}
+                  onChange={function (e) {
+                    setFilterStatus(e.target.value);
+                  }}
+                >
+                  <option value="all">Semua status</option>
+                  <option value="pending">Pending</option>
+                  <option value="assigned">Assigned</option>
+                  <option value="completed">Completed</option>
+                </select>
+
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={refreshData}
+                  disabled={loading}
+                >
+                  {loading ? "Memuat..." : "Refresh data"}
+                </button>
+              </div>
+
+              <p className="small-text">
+                Ringkasan filter saat ini: Fee owner{" "}
+                <b>{formatRupiah(totalOwnerFiltered)}</b> • Fee driver{" "}
+                <b>{formatRupiah(totalDriverFiltered)}</b> pada{" "}
+                <b>{filteredOrders.length}</b> order yang tampil.
+              </p>
+            </div>
+
+            {/* TABEL ORDER */}
+            <div style={{ marginBottom: "0.7rem" }}>
+              <div className="section-title">Daftar order</div>
+              {filteredOrders.length === 0 ? (
+                <p className="small-text">
+                  Belum ada order yang cocok dengan filter. Coba ubah filter atau
+                  buat order dari panel customer.
+                </p>
+              ) : (
+                <div
+                  style={{
+                    maxHeight: "260px",
+                    overflowY: "auto",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(148,163,184,0.5)",
+                    padding: "0.5rem",
+                    background: "rgba(255,255,255,0.7)",
+                  }}
+                >
+                  {filteredOrders
+                    .slice()
+                    .reverse()
+                    .map(function (order) {
+                      const jenis = order.serviceType || "bike";
+                      const ongkos = formatRupiah(order.price || 0);
+                      const feeOwner = formatRupiah(order.feeOwner || 0);
+                      const feeDriver = formatRupiah(order.feeDriver || 0);
+                      const statusLabel = order.status || "pending";
+
+                      return (
+                        <div
+                          key={order.id}
+                          style={{
+                            padding: "0.55rem 0.6rem",
+                            borderRadius: "10px",
+                            marginBottom: "0.4rem",
+                            background: "rgba(15,23,42,0.96)",
+                            color: "#e5e7eb",
+                            fontSize: "0.8rem",
+                            border: "1px solid rgba(75,85,99,0.7)",
+                          }}
+                        >
+                          <div style={{ fontWeight: 600 }}>
+                            [{jenis.toUpperCase()}] {order.pickup} →{" "}
+                            {order.destination}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "#9ca3af",
+                              marginTop: "0.1rem",
+                            }}
+                          >
+                            Customer: {order.customerEmail}
+                            <br />
+                            Driver: {order.driverEmail || "- (belum diambil)"}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "#bfdbfe",
+                              marginTop: "0.2rem",
+                            }}
+                          >
+                            Ongkos: <b>{ongkos}</b>
+                            <br />
+                            Fee owner: <b>{feeOwner}</b> • Fee driver:{" "}
+                            <b>{feeDriver}</b>
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.7rem",
+                              color: "#9ca3af",
+                              marginTop: "0.2rem",
+                            }}
+                          >
+                            Status: {statusLabel} • Dibuat:{" "}
+                            {new Date(order.createdAt).toLocaleString("id-ID", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
+
+            <p className="small-text">
+              Panel ini hanya membaca data dari <code>orders.json</code> via
+              endpoint <code>/orders/all</code> dan <code>/stats/owner</code>. Untuk
+              produksi nanti bisa ditambah login khusus owner.
+            </p>
+          </section>
+        );
+      }
+
+      function AppShell() {
+        return (
+          <div className="app-root">
+            <header className="page-header">
+              <div style={{ flex: 1 }}>
+                <div className="page-header-title">OjekX Owner</div>
+                <div className="page-header-sub">
+                  Panel pemilik • pantau fee 20% dari semua transaksi
+                </div>
+              </div>
+              <div className="logo-dot">OX</div>
+            </header>
+
+            <main className="page-main">
+              <div className="container">
+                <OwnerApp />
+              </div>
+            </main>
+
+            <footer>© 2025 OjekX • Owner Panel</footer>
+          </div>
+        );
+      }
+
+      const rootElement = document.getElementById("root");
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(<AppShell />);
+    </script>
+  </body>
+</html>

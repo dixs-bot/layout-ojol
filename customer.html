@@ -186,7 +186,8 @@
         margin-bottom: 0.25rem;
       }
 
-      input {
+      input,
+      select {
         width: 100%;
         padding: 0.7rem 0.8rem;
         border-radius: 0.7rem;
@@ -197,7 +198,8 @@
         color: var(--text-main);
       }
 
-      input:focus {
+      input:focus,
+      select:focus {
         border-color: var(--blue-neon);
         box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.6);
         background: #ffffff;
@@ -259,7 +261,7 @@
   <body>
     <div id="root">Loading...</div>
 
-    <!-- React & ReactDOM CDN -->
+    <!-- React & ReactDOM dari CDN -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <!-- Babel -->
@@ -267,7 +269,18 @@
 
     <script type="text/babel">
       const { useState, useEffect } = React;
-      const API_BASE = "http://localhost:3000";
+      const API_BASE = "http://localhost:3000"; // ganti IP kalau pakai 2 HP
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      const BASE_PRICES = {
+        bike: 10000,
+        car: 20000,
+        food: 15000,
+      };
 
       function CustomerApp() {
         const [screen, setScreen] = useState("landing"); // landing | register | login | dashboard
@@ -276,19 +289,20 @@
         const [password, setPassword] = useState("");
         const [token, setToken] = useState(null);
         const [profile, setProfile] = useState(null);
-        const [orders, setOrders] = useState([]);
-        const [pickup, setPickup] = useState("");
-        const [destination, setDestination] = useState("");
-        const [serviceType, setServiceType] = useState("bike"); // bike | car | food
         const [loading, setLoading] = useState(false);
         const [message, setMessage] = useState(null);
+
+        const [pickup, setPickup] = useState("");
+        const [destination, setDestination] = useState("");
+        const [serviceType, setServiceType] = useState("bike");
+        const [orders, setOrders] = useState([]);
 
         useEffect(function () {
           const savedToken = localStorage.getItem("ojekx_customer_token");
           if (savedToken) {
             setToken(savedToken);
             fetchProfile(savedToken);
-            fetchOrders(savedToken);
+            fetchMyOrders(savedToken);
           }
         }, []);
 
@@ -308,7 +322,7 @@
               headers: { Authorization: "Bearer " + usedToken },
             });
             if (!res.ok) {
-              showMessage("error", "Gagal ambil profile. Silakan login ulang.");
+              showMessage("error", "Gagal ambil profile. Coba login ulang.");
               setProfile(null);
               return;
             }
@@ -316,13 +330,13 @@
             setProfile(data);
             setScreen("dashboard");
           } catch (err) {
-            showMessage("error", "Error koneksi ke backend (profile).");
+            showMessage("error", "Error koneksi ke backend.");
           } finally {
             setLoading(false);
           }
         }
 
-        async function fetchOrders(currentToken) {
+        async function fetchMyOrders(currentToken) {
           try {
             const usedToken = currentToken || token;
             if (!usedToken) return;
@@ -336,7 +350,7 @@
             const data = await res.json();
             setOrders(data.orders || []);
           } catch (err) {
-            console.log("Error fetch orders customer", err);
+            console.log("Error fetchMyOrders", err);
           }
         }
 
@@ -363,7 +377,7 @@
             showMessage("success", "Register customer berhasil, silakan login.");
             setScreen("login");
           } catch (err) {
-            showMessage("error", "Error koneksi ke backend (register).");
+            showMessage("error", "Error koneksi ke backend.");
           } finally {
             setLoading(false);
           }
@@ -388,9 +402,9 @@
             setToken(data.token);
             localStorage.setItem("ojekx_customer_token", data.token);
             fetchProfile(data.token);
-            fetchOrders(data.token);
+            fetchMyOrders(data.token);
           } catch (err) {
-            showMessage("error", "Error koneksi ke backend (login).");
+            showMessage("error", "Error koneksi ke backend.");
           } finally {
             setLoading(false);
           }
@@ -400,24 +414,24 @@
           setToken(null);
           setProfile(null);
           localStorage.removeItem("ojekx_customer_token");
-          setOrders([]);
           setScreen("landing");
+          setOrders([]);
           showMessage("success", "Logout customer berhasil.");
         }
 
         async function handleCreateOrder(e) {
           e.preventDefault();
           if (!pickup || !destination) {
-            showMessage("error", "Isi lokasi jemput dan tujuan dulu.");
+            showMessage("error", "Pickup & tujuan wajib diisi.");
             return;
           }
           if (!token) {
             showMessage("error", "Harus login sebagai customer.");
             return;
           }
-
           try {
             setLoading(true);
+            const basePrice = BASE_PRICES[serviceType] || 10000;
             const res = await fetch(API_BASE + "/order", {
               method: "POST",
               headers: {
@@ -425,9 +439,10 @@
                 Authorization: "Bearer " + token,
               },
               body: JSON.stringify({
-                pickup: pickup,
-                destination: destination,
-                serviceType: serviceType,
+                pickup,
+                destination,
+                serviceType,
+                price: basePrice, // kirim ongkos, fee internal di server
               }),
             });
             const data = await res.json();
@@ -437,39 +452,22 @@
             }
             showMessage(
               "success",
-              "Order " + serviceType.toUpperCase() + " berhasil dibuat."
+              "Order " +
+                serviceType.toUpperCase() +
+                " berhasil dibuat. Ongkos: " +
+                formatRupiah(basePrice)
             );
             setPickup("");
             setDestination("");
-            fetchOrders(token);
+            fetchMyOrders(token);
           } catch (err) {
-            showMessage("error", "Error koneksi ke backend (order).");
+            showMessage("error", "Error koneksi saat membuat order.");
           } finally {
             setLoading(false);
           }
         }
 
-        function renderServiceButton(code, label) {
-          const active = serviceType === code;
-          const baseClass = "btn " + (active ? "btn-primary" : "btn-outline");
-          return (
-            <button
-              key={code}
-              type="button"
-              className={baseClass}
-              style={{
-                padding: "0.35rem 0.8rem",
-                fontSize: "0.78rem",
-                flex: 1,
-              }}
-              onClick={function () {
-                setServiceType(code);
-              }}
-            >
-              {label}
-            </button>
-          );
-        }
+        const currentPrice = BASE_PRICES[serviceType] || 10000;
 
         function renderLanding() {
           return (
@@ -486,11 +484,11 @@
               )}
 
               <h1 className="hero-title">
-                Panel <span className="hero-highlight">Customer</span>
+                OjekX <span className="hero-highlight">Customer</span>
               </h1>
               <p className="hero-sub">
-                Pesan ojol dengan cepat: pilih titik jemput, tujuan, dan jenis layanan
-                (Bike, Car, Food). Tampilan bersih dan fokus ke penumpang.
+                Pesan ojek, mobil, atau antar makanan. Ongkos ditampilkan jelas, fee
+                aplikator & driver diatur internal.
               </p>
               <div className="hero-actions">
                 <button
@@ -511,7 +509,7 @@
                 </button>
               </div>
               <div style={{ marginTop: "0.9rem" }}>
-                <span className="pill">Mode demo • role: customer</span>
+                <span className="pill">Mode demo • terhubung ke panel driver</span>
               </div>
             </section>
           );
@@ -535,8 +533,8 @@
                 Daftar <span className="hero-highlight">Customer</span>
               </h2>
               <p className="form-sub">
-                Buat akun penumpang. Data disimpan di{" "}
-                <code>users.json</code> dengan role <b>customer</b>.
+                Buat akun customer untuk mulai memesan layanan ojek, mobil, atau
+                makanan.
               </p>
               <form onSubmit={handleRegister}>
                 <div className="form-group">
@@ -546,7 +544,7 @@
                     onChange={function (e) {
                       setName(e.target.value);
                     }}
-                    placeholder="contoh: Rani Putri"
+                    placeholder="contoh: Rina Putri"
                   />
                 </div>
                 <div className="form-group">
@@ -612,7 +610,7 @@
                 Masuk <span className="hero-highlight">Customer</span>
               </h2>
               <p className="form-sub">
-                Gunakan email & password yang sudah kamu daftarkan sebagai customer.
+                Login untuk memesan layanan dan melihat riwayat perjalananmu.
               </p>
               <form onSubmit={handleLogin}>
                 <div className="form-group">
@@ -681,43 +679,38 @@
                 </span>
               </h2>
               <p className="form-sub">
-                Pesan perjalananmu: tentukan titik jemput, tujuan, dan jenis layanan.
-                Order disimpan di <code>orders.json</code> dan hanya milikmu.
+                Pilih layanan, lihat ongkos, dan buat pesanan. Fee driver & aplikator
+                diatur di backend dan tidak ditampilkan di sini.
               </p>
 
-              {/* PILIH LAYANAN */}
-              <div style={{ marginBottom: "0.9rem" }}>
-                <div className="section-title">Jenis layanan</div>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "0.4rem",
-                    marginTop: "0.4rem",
-                  }}
-                >
-                  {renderServiceButton("bike", "Bike")}
-                  {renderServiceButton("car", "Car")}
-                  {renderServiceButton("food", "Food")}
-                </div>
-                <p className="small-text" style={{ marginTop: "0.4rem" }}>
-                  • Bike: motor cepat & hemat. <br />
-                  • Car: lebih nyaman dan lega. <br />
-                  • Food: pesan makan antar ke lokasi kamu.
-                </p>
-              </div>
-
               {/* FORM ORDER */}
-              <div style={{ marginBottom: "0.9rem" }}>
-                <div className="section-title">Buat order perjalanan</div>
-                <form onSubmit={handleCreateOrder}>
+              <div style={{ marginBottom: "1rem" }}>
+                <div className="section-title">Buat order baru</div>
+                <form
+                  onSubmit={handleCreateOrder}
+                  style={{ marginTop: "0.4rem" }}
+                >
                   <div className="form-group">
-                    <label>Lokasi jemput</label>
+                    <label>Layanan</label>
+                    <select
+                      value={serviceType}
+                      onChange={function (e) {
+                        setServiceType(e.target.value);
+                      }}
+                    >
+                      <option value="bike">Ojek Motor</option>
+                      <option value="car">Mobil</option>
+                      <option value="food">Antar Makanan</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Lokasi Jemput</label>
                     <input
                       value={pickup}
                       onChange={function (e) {
                         setPickup(e.target.value);
                       }}
-                      placeholder="contoh: Rumah / Jalan Sudirman"
+                      placeholder="contoh: Rumah, Mall, Kantor"
                     />
                   </div>
                   <div className="form-group">
@@ -727,25 +720,32 @@
                       onChange={function (e) {
                         setDestination(e.target.value);
                       }}
-                      placeholder="contoh: Kantor / Mall / Restoran"
+                      placeholder="contoh: Stasiun, Bandara"
                     />
                   </div>
+
+                  <p className="small-text" style={{ marginBottom: "0.6rem" }}>
+                    Perkiraan ongkos:{" "}
+                    <b>{formatRupiah(currentPrice)}</b>{" "}
+                    (fee driver & aplikator sudah termasuk).
+                  </p>
+
                   <button
                     className="btn btn-primary btn-block"
                     type="submit"
                     disabled={loading}
                   >
-                    {loading ? "Memproses..." : "Pesan Sekarang"}
+                    {loading ? "Memesan..." : "Pesan Sekarang"}
                   </button>
                 </form>
               </div>
 
-              {/* LIST ORDER */}
+              {/* RIWAYAT ORDER */}
               <div style={{ marginBottom: "0.9rem" }}>
-                <div className="section-title">Riwayat order kamu</div>
+                <div className="section-title">Order kamu</div>
                 {orders.length === 0 ? (
                   <p className="small-text">
-                    Belum ada order. Coba buat satu perjalanan dulu.
+                    Belum ada order. Coba buat satu order dulu di form di atas.
                   </p>
                 ) : (
                   <div
@@ -762,9 +762,10 @@
                       .slice()
                       .reverse()
                       .map(function (order) {
-                        const jenis =
-                          order.serviceType ||
-                          (order.pickup && order.destination ? "bike" : "-");
+                        const jenis = order.serviceType || "bike";
+                        const ongkos = formatRupiah(order.price || 0);
+                        const statusLabel = order.status || "pending";
+
                         return (
                           <div
                             key={order.id}
@@ -789,7 +790,12 @@
                                 marginTop: "0.1rem",
                               }}
                             >
-                              Status: {order.status} •{" "}
+                              Ongkos: <b>{ongkos}</b>
+                              <br />
+                              Status: {statusLabel} • Driver:{" "}
+                              {order.driverEmail || "- (belum diambil)"}
+                              <br />
+                              Dibuat:{" "}
                               {new Date(order.createdAt).toLocaleString("id-ID", {
                                 day: "2-digit",
                                 month: "short",
@@ -811,8 +817,6 @@
                   Nama: <b>{profile ? profile.name : "-"}</b>
                   <br />
                   Email: <b>{profile ? profile.email : "-"}</b>
-                  <br />
-                  Role: <b>{profile ? profile.role : "-"}</b>
                 </p>
               </div>
 
@@ -836,7 +840,7 @@
               <div style={{ flex: 1 }}>
                 <div className="page-header-title">OjekX Customer</div>
                 <div className="page-header-sub">
-                  Panel pemesanan untuk penumpang (Bike / Car / Food)
+                  Panel customer • hanya tampil ongkos, fee internal
                 </div>
               </div>
               <div className="logo-dot">CX</div>
@@ -853,7 +857,8 @@
         );
       }
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
+      const rootElement = document.getElementById("root");
+      const root = ReactDOM.createRoot(rootElement);
       root.render(<AppShell />);
     </script>
   </body>

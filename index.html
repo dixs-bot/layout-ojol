@@ -96,7 +96,7 @@
       .hero-title {
         font-size: 1.9rem;
         font-weight: 900;
-        margin-bottom: 0.7rem;
+        margin-bottom: 0.4rem;
         letter-spacing: 0.02em;
       }
 
@@ -107,10 +107,10 @@
       }
 
       .hero-sub {
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         color: var(--text-muted);
-        line-height: 1.5rem;
-        margin-bottom: 1.1rem;
+        line-height: 1.4rem;
+        margin-bottom: 0.8rem;
       }
 
       .hero-actions {
@@ -254,6 +254,162 @@
         color: #166534;
         border: 1px solid #bbf7d0;
       }
+
+      /* Avatar / foto driver di kanan atas */
+      .avatar-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 999px;
+        border: 2px solid var(--blue-neon);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+        box-shadow: 0 0 12px rgba(96, 165, 250, 0.7);
+      }
+
+      .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-placeholder {
+        color: #e5e7eb;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+
+      /* Hamburger menu */
+      .hamburger-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.9);
+        background: rgba(15, 23, 42, 0.96);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(15, 23, 42, 0.55);
+      }
+
+      .hamburger-lines {
+        width: 16px;
+        height: 2px;
+        border-radius: 999px;
+        background: #e5e7eb;
+        position: relative;
+      }
+
+      .hamburger-lines::before,
+      .hamburger-lines::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 16px;
+        height: 2px;
+        border-radius: 999px;
+        background: #e5e7eb;
+      }
+
+      .hamburger-lines::before {
+        top: -5px;
+      }
+
+      .hamburger-lines::after {
+        top: 5px;
+      }
+
+      .menu-panel {
+        position: absolute;
+        top: 52px;
+        right: 1.6rem;
+        width: 180px;
+        background: rgba(15, 23, 42, 0.98);
+        color: #e5e7eb;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+        padding: 0.5rem 0.5rem 0.35rem;
+        z-index: 20;
+      }
+
+      .menu-item {
+        width: 100%;
+        padding: 0.4rem 0.6rem;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font-size: 0.8rem;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+
+      .menu-item span {
+        opacity: 0.9;
+      }
+
+      .menu-item:hover {
+        background: rgba(31, 41, 55, 0.95);
+      }
+
+      .menu-item-label {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        padding: 0.2rem 0.2rem 0.1rem;
+      }
+
+      /* Progress target */
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.4);
+        overflow: hidden;
+        margin-top: 0.25rem;
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(to right, #3b82f6, #22c55e);
+      }
+
+      .progress-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.15rem;
+      }
+
+      /* Quick nav row */
+      .quick-nav {
+        display: flex;
+        gap: 0.4rem;
+        margin-bottom: 0.8rem;
+        flex-wrap: wrap;
+      }
+
+      .quick-nav-btn {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.8);
+        background: rgba(255, 255, 255, 0.9);
+        font-size: 0.75rem;
+        padding: 0.4rem 0.7rem;
+        cursor: pointer;
+      }
+
+      .quick-nav-btn.active {
+        background: #020617;
+        color: #e5e7eb;
+        border-color: var(--blue-neon);
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+      }
     </style>
   </head>
   <body>
@@ -267,7 +423,19 @@
 
     <script type="text/babel">
       const { useState, useEffect } = React;
-      const API_BASE = "http://localhost:3000";
+      const API_BASE = "http://localhost:3000"; // ganti ke IP kalau pakai 2 HP
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
 
       function DriverApp() {
         const [screen, setScreen] = useState("landing"); // landing | register | login | dashboard
@@ -283,6 +451,16 @@
         const [openOrders, setOpenOrders] = useState([]);
         const [myOrders, setMyOrders] = useState([]);
 
+        // target & foto
+        const [targetIncome, setTargetIncome] = useState(200000);
+        const [targetInput, setTargetInput] = useState("200000");
+        const [photoUrl, setPhotoUrl] = useState("");
+        const [photoInput, setPhotoInput] = useState("");
+
+        // menu & nav
+        const [menuOpen, setMenuOpen] = useState(false);
+        const [activeNav, setActiveNav] = useState("dashboard"); // dashboard | income | orders | profile
+
         useEffect(function () {
           const savedToken = localStorage.getItem("ojekx_token");
           if (savedToken) {
@@ -294,6 +472,21 @@
           const savedStatus = localStorage.getItem("ojekx_driver_status");
           if (savedStatus === "online") {
             setIsOnline(true);
+          }
+
+          const savedTarget = localStorage.getItem("ojekx_target_income");
+          if (savedTarget) {
+            const num = Number(savedTarget);
+            if (!isNaN(num) && num > 0) {
+              setTargetIncome(num);
+              setTargetInput(String(num));
+            }
+          }
+
+          const savedPhoto = localStorage.getItem("ojekx_driver_photo");
+          if (savedPhoto) {
+            setPhotoUrl(savedPhoto);
+            setPhotoInput(savedPhoto);
           }
         }, []);
 
@@ -472,6 +665,53 @@
           } finally {
             setLoading(false);
           }
+        }
+
+        function handleSaveTarget(e) {
+          e.preventDefault();
+          const num = Number(targetInput);
+          if (isNaN(num) || num <= 0) {
+            showMessage("error", "Target harus berupa angka lebih dari 0.");
+            return;
+          }
+          setTargetIncome(num);
+          localStorage.setItem("ojekx_target_income", String(num));
+          showMessage("success", "Target pendapatan disimpan.");
+        }
+
+        function handleSavePhoto(e) {
+          e.preventDefault();
+          if (!photoInput || !photoInput.trim()) {
+            setPhotoUrl("");
+            localStorage.removeItem("ojekx_driver_photo");
+            showMessage("success", "Foto dihapus.");
+            return;
+          }
+          setPhotoUrl(photoInput.trim());
+          localStorage.setItem("ojekx_driver_photo", photoInput.trim());
+          showMessage("success", "URL foto driver disimpan.");
+        }
+
+        // Hitung pendapatan
+        const totalIncome = myOrders.reduce(function (sum, order) {
+          return sum + Number(order.feeDriver || 0);
+        }, 0);
+
+        const progress =
+          targetIncome > 0
+            ? Math.max(
+                0,
+                Math.min(100, Math.round((totalIncome / targetIncome) * 100))
+              )
+            : 0;
+
+        const bonusActive = totalIncome >= targetIncome;
+        const bonusEstimate = Math.round(totalIncome * 0.1); // contoh bonus 10%
+
+        function handleNavClick(key, sectionId) {
+          setActiveNav(key);
+          scrollToSection(sectionId);
+          setMenuOpen(false);
         }
 
         function renderLanding() {
@@ -671,7 +911,7 @@
           const statusBg = isOnline ? "rgba(34,197,94,0.15)" : "rgba(248,113,113,0.15)";
 
           return (
-            <section className="card">
+            <section className="card" style={{ position: "relative" }}>
               {message && (
                 <div
                   className={
@@ -683,19 +923,165 @@
                 </div>
               )}
 
-              <h2 className="hero-title" style={{ fontSize: "1.5rem" }}>
-                Halo,{" "}
-                <span className="hero-highlight">
-                  {profile ? profile.name : "Driver"}
-                </span>
-              </h2>
-              <p className="form-sub">
-                Status driver, order pending dari customer, dan daftar order yang sudah
-                kamu ambil.
-              </p>
+              {/* TOP ROW: title + photo + hamburger */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: "0.8rem",
+                  marginBottom: "0.4rem",
+                }}
+              >
+                <div style={{ flex: 1, minWidth: "0" }}>
+                  <h2 className="hero-title" style={{ fontSize: "1.6rem" }}>
+                    Halo,{" "}
+                    <span className="hero-highlight">
+                      {profile ? profile.name : "Driver"}
+                    </span>
+                  </h2>
+                  <p className="hero-sub" style={{ marginBottom: 0 }}>
+                    Pantau pendapatan, ambil order, dan kelola profil dari satu
+                    tempat.
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    gap: "0.4rem",
+                  }}
+                >
+                  {/* Foto di kanan atas */}
+                  <div className="avatar-wrapper">
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="Foto driver" className="avatar-img" />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        {profile && profile.name
+                          ? profile.name
+                              .split(" ")
+                              .slice(0, 2)
+                              .map((n) => n[0]?.toUpperCase())
+                              .join("")
+                          : "DX"}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tombol garis 3 */}
+                  <button
+                    type="button"
+                    className="hamburger-btn"
+                    onClick={function () {
+                      setMenuOpen(!menuOpen);
+                    }}
+                  >
+                    <div className="hamburger-lines"></div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Panel menu dropdown */}
+              {menuOpen && (
+                <div className="menu-panel">
+                  <div className="menu-item-label">Menu fitur</div>
+                  <button
+                    className="menu-item"
+                    type="button"
+                    onClick={function () {
+                      handleNavClick("dashboard", "section-status");
+                    }}
+                  >
+                    <span>Dashboard</span>
+                    <span>•</span>
+                  </button>
+                  <button
+                    className="menu-item"
+                    type="button"
+                    onClick={function () {
+                      handleNavClick("income", "section-income");
+                    }}
+                  >
+                    <span>Pendapatan</span>
+                    <span>Rp</span>
+                  </button>
+                  <button
+                    className="menu-item"
+                    type="button"
+                    onClick={function () {
+                      handleNavClick("orders", "section-orders");
+                    }}
+                  >
+                    <span>Order</span>
+                    <span>🛵</span>
+                  </button>
+                  <button
+                    className="menu-item"
+                    type="button"
+                    onClick={function () {
+                      handleNavClick("profile", "section-profile");
+                    }}
+                  >
+                    <span>Profil</span>
+                    <span>👤</span>
+                  </button>
+                  <div className="menu-item-label">Slot fitur lain (coming soon)</div>
+                </div>
+              )}
+
+              {/* QUICK NAV BUTTONS */}
+              <div className="quick-nav">
+                <button
+                  type="button"
+                  className={
+                    "quick-nav-btn " + (activeNav === "dashboard" ? "active" : "")
+                  }
+                  onClick={function () {
+                    handleNavClick("dashboard", "section-status");
+                  }}
+                >
+                  Dashboard
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "quick-nav-btn " + (activeNav === "income" ? "active" : "")
+                  }
+                  onClick={function () {
+                    handleNavClick("income", "section-income");
+                  }}
+                >
+                  Pendapatan
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "quick-nav-btn " + (activeNav === "orders" ? "active" : "")
+                  }
+                  onClick={function () {
+                    handleNavClick("orders", "section-orders");
+                  }}
+                >
+                  Order
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "quick-nav-btn " + (activeNav === "profile" ? "active" : "")
+                  }
+                  onClick={function () {
+                    handleNavClick("profile", "section-profile");
+                  }}
+                >
+                  Profil
+                </button>
+              </div>
 
               {/* STATUS ONLINE/OFFLINE */}
-              <div style={{ marginBottom: "0.9rem" }}>
+              <div id="section-status" style={{ marginBottom: "0.9rem" }}>
                 <div className="section-title">Status driver</div>
                 <div
                   style={{
@@ -744,8 +1130,100 @@
                 </div>
               </div>
 
-              {/* ORDER TERSEDIA */}
-              <div style={{ marginBottom: "0.9rem" }}>
+              {/* PENDAPATAN & TARGET */}
+              <div id="section-income" style={{ marginBottom: "0.9rem" }}>
+                <div className="section-title">Pendapatan & target</div>
+                <div
+                  style={{
+                    marginTop: "0.4rem",
+                    padding: "0.6rem 0.7rem",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(148,163,184,0.7)",
+                    background: "rgba(15,23,42,0.92)",
+                    color: "#e5e7eb",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "0.6rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <div>
+                      <div style={{ opacity: 0.75, fontSize: "0.72rem" }}>
+                        Pendapatan total (fee driver)
+                      </div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 700 }}>
+                        {formatRupiah(totalIncome)}
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ opacity: 0.75, fontSize: "0.72rem" }}>
+                        Target kamu
+                      </div>
+                      <div style={{ fontSize: "0.95rem", fontWeight: 700 }}>
+                        {formatRupiah(targetIncome)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: progress + "%" }}
+                    ></div>
+                  </div>
+                  <div className="progress-label">
+                    Progress: <b>{progress}%</b>{" "}
+                    {bonusActive && (
+                      <span style={{ color: "#bbf7d0" }}>
+                        • Target tercapai! Bonus estimasi:{" "}
+                        {formatRupiah(bonusEstimate)}
+                      </span>
+                    )}
+                  </div>
+
+                  <form
+                    onSubmit={handleSaveTarget}
+                    style={{
+                      marginTop: "0.45rem",
+                      display: "flex",
+                      gap: "0.35rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <input
+                      type="number"
+                      min="0"
+                      value={targetInput}
+                      onChange={function (e) {
+                        setTargetInput(e.target.value);
+                      }}
+                      placeholder="Target (contoh: 200000)"
+                      style={{
+                        flex: 1,
+                        minWidth: "120px",
+                        background: "rgba(15,23,42,0.85)",
+                        color: "#e5e7eb",
+                        borderColor: "rgba(148,163,184,0.9)",
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      className="btn btn-outline"
+                      style={{ paddingInline: "0.8rem" }}
+                    >
+                      Simpan target
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* ORDER TERSEDIA & ORDER SAYA */}
+              <div id="section-orders" style={{ marginBottom: "0.9rem" }}>
                 <div
                   style={{
                     display: "flex",
@@ -791,6 +1269,10 @@
                       .reverse()
                       .map(function (order) {
                         const jenis = order.serviceType || "bike";
+                        const tarif = formatRupiah(order.price || 0);
+                        const feeDriver = formatRupiah(order.feeDriver || 0);
+                        const feeOwner = formatRupiah(order.feeOwner || 0);
+
                         return (
                           <div
                             key={order.id}
@@ -813,7 +1295,6 @@
                                 fontSize: "0.72rem",
                                 color: "#9ca3af",
                                 marginTop: "0.1rem",
-                                marginBottom: "0.3rem",
                               }}
                             >
                               Customer: {order.customerEmail} •{" "}
@@ -824,12 +1305,27 @@
                                 minute: "2-digit",
                               })}
                             </div>
+                            <div
+                              style={{
+                                fontSize: "0.72rem",
+                                color: "#bfdbfe",
+                                marginTop: "0.2rem",
+                              }}
+                            >
+                              Tarif: <b>{tarif}</b> • Fee driver:{" "}
+                              <b>{feeDriver}</b>
+                              <br />
+                              <span style={{ opacity: 0.7 }}>
+                                Fee aplikator: {feeOwner}
+                              </span>
+                            </div>
                             <button
                               className="btn btn-primary btn-block"
                               type="button"
                               onClick={function () {
                                 handleAcceptOrder(order.id);
                               }}
+                              style={{ marginTop: "0.4rem" }}
                             >
                               Ambil Order
                             </button>
@@ -838,84 +1334,152 @@
                       })}
                   </div>
                 )}
-              </div>
 
-              {/* ORDER SAYA */}
-              <div style={{ marginBottom: "0.9rem" }}>
-                <div className="section-title">Order saya</div>
-                {myOrders.length === 0 ? (
-                  <p className="small-text">
-                    Belum ada order yang kamu ambil. Pilih dari daftar "Order
-                    tersedia".
-                  </p>
-                ) : (
-                  <div
-                    style={{
-                      maxHeight: "160px",
-                      overflowY: "auto",
-                      borderRadius: "12px",
-                      border: "1px solid rgba(148,163,184,0.5)",
-                      padding: "0.5rem",
-                      background: "rgba(255,255,255,0.6)",
-                    }}
-                  >
-                    {myOrders
-                      .slice()
-                      .reverse()
-                      .map(function (order) {
-                        const jenis = order.serviceType || "bike";
-                        return (
-                          <div
-                            key={order.id}
-                            style={{
-                              padding: "0.55rem 0.6rem",
-                              borderRadius: "10px",
-                              marginBottom: "0.4rem",
-                              background: "rgba(15,23,42,0.9)",
-                              color: "#e5e7eb",
-                              fontSize: "0.8rem",
-                              border: "1px solid rgba(75,85,99,0.7)",
-                            }}
-                          >
-                            <div style={{ fontWeight: 600 }}>
-                              [{jenis.toUpperCase()}] {order.pickup} →{" "}
-                              {order.destination}
-                            </div>
+                <div style={{ marginTop: "0.7rem" }}>
+                  <div className="section-title">Order saya</div>
+                  {myOrders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada order yang kamu ambil. Pilih dari daftar "Order
+                      tersedia".
+                    </p>
+                  ) : (
+                    <div
+                      style={{
+                        maxHeight: "160px",
+                        overflowY: "auto",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(148,163,184,0.5)",
+                        padding: "0.5rem",
+                        background: "rgba(255,255,255,0.6)",
+                      }}
+                    >
+                      {myOrders
+                        .slice()
+                        .reverse()
+                        .map(function (order) {
+                          const jenis = order.serviceType || "bike";
+                          const tarif = formatRupiah(order.price || 0);
+                          const feeDriver = formatRupiah(order.feeDriver || 0);
+                          const feeOwner = formatRupiah(order.feeOwner || 0);
+
+                          return (
                             <div
+                              key={order.id}
                               style={{
-                                fontSize: "0.72rem",
-                                color: "#9ca3af",
-                                marginTop: "0.1rem",
+                                padding: "0.55rem 0.6rem",
+                                borderRadius: "10px",
+                                marginBottom: "0.4rem",
+                                background: "rgba(15,23,42,0.9)",
+                                color: "#e5e7eb",
+                                fontSize: "0.8rem",
+                                border: "1px solid rgba(75,85,99,0.7)",
                               }}
                             >
-                              Status: {order.status} • Customer:{" "}
-                              {order.customerEmail}
-                              <br />
-                              Dibuat:{" "}
-                              {new Date(order.createdAt).toLocaleString("id-ID", {
-                                day: "2-digit",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              <div style={{ fontWeight: 600 }}>
+                                [{jenis.toUpperCase()}] {order.pickup} →{" "}
+                                {order.destination}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "0.72rem",
+                                  color: "#9ca3af",
+                                  marginTop: "0.1rem",
+                                }}
+                              >
+                                Status: {order.status} • Customer:{" "}
+                                {order.customerEmail}
+                                <br />
+                                Dibuat:{" "}
+                                {new Date(order.createdAt).toLocaleString("id-ID", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: "0.72rem",
+                                  color: "#bfdbfe",
+                                  marginTop: "0.2rem",
+                                }}
+                              >
+                                Tarif: <b>{tarif}</b> • Fee driver:{" "}
+                                <b>{feeDriver}</b>
+                                <br />
+                                <span style={{ opacity: 0.7 }}>
+                                  Fee aplikator: {feeOwner}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                )}
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* PROFIL DRIVER */}
-              <div style={{ marginBottom: "0.9rem" }}>
-                <div className="section-title">Profil Driver</div>
-                <p className="small-text">
-                  Nama: <b>{profile ? profile.name : "-"}</b>
-                  <br />
-                  Email: <b>{profile ? profile.email : "-"}</b>
-                  <br />
-                  Role: <b>{profile ? profile.role : "-"}</b>
-                </p>
+              {/* PROFIL & FOTO DRIVER */}
+              <div id="section-profile" style={{ marginBottom: "0.9rem" }}>
+                <div className="section-title">Profil & foto driver</div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.7rem",
+                    alignItems: "center",
+                    marginTop: "0.4rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div className="avatar-wrapper">
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="Foto driver" className="avatar-img" />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        {profile && profile.name
+                          ? profile.name
+                              .split(" ")
+                              .slice(0, 2)
+                              .map((n) => n[0]?.toUpperCase())
+                              .join("")
+                          : "DX"}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: "160px" }}>
+                    <p className="small-text">
+                      Nama: <b>{profile ? profile.name : "-"}</b>
+                      <br />
+                      Email: <b>{profile ? profile.email : "-"}</b>
+                      <br />
+                      Role: <b>{profile ? profile.role : "-"}</b>
+                    </p>
+                    <form
+                      onSubmit={handleSavePhoto}
+                      style={{ marginTop: "0.25rem" }}
+                    >
+                      <input
+                        value={photoInput}
+                        onChange={function (e) {
+                          setPhotoInput(e.target.value);
+                        }}
+                        placeholder="URL foto (opsional)"
+                        style={{ fontSize: "0.78rem" }}
+                      />
+                      <button
+                        type="submit"
+                        className="btn btn-outline"
+                        style={{
+                          marginTop: "0.25rem",
+                          padding: "0.35rem 0.7rem",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        Simpan foto
+                      </button>
+                    </form>
+                  </div>
+                </div>
               </div>
 
               <button className="btn btn-outline btn-block" onClick={handleLogout}>
@@ -938,7 +1502,7 @@
               <div style={{ flex: 1 }}>
                 <div className="page-header-title">OjekX Driver</div>
                 <div className="page-header-sub">
-                  Panel driver • versi dengan tombol REFRESH
+                  Panel driver • siap dikembangkan fitur-fitur lanjutan
                 </div>
               </div>
               <div className="logo-dot">DX</div>
