@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OjekX Customer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- React Production -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Leaflet CSS & JS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+          "Segoe UI", sans-serif;
+        background: #020617;
+        color: #e2e8f0;
+      }
+      .app-root {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .app-shell {
+        width: 100%;
+        max-width: 480px;
+      }
+      .app-header {
+        background: #0f172a;
+        border-bottom: 1px solid #1e293b;
+        padding: 1rem 1rem 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .app-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      .app-subtitle {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .logo-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #0ea5e9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 0 10px #0ea5e9;
+      }
+      .main-area {
+        padding: 0.75rem 1rem 1rem;
+      }
+      .card {
+        padding: 1rem;
+        background: #0f172a;
+        border-radius: 16px;
+        border: 1px solid #1f2937;
+      }
+      .hero-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-bottom: 0.5rem;
+      }
+      .hero-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .hero-highlight {
+        color: #38bdf8;
+      }
+      .hero-sub {
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+      .avatar-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        border: 2px solid #38bdf8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+      }
+      .avatar-placeholder {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .btn {
+        border: none;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-primary {
+        background: #0ea5e9;
+        color: #fff;
+        box-shadow: 0 0 10px #0ea5e9;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid #38bdf8;
+        color: #38bdf8;
+      }
+      .small-text {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .form-group {
+        margin-top: 0.7rem;
+      }
+      .form-group label {
+        font-size: 0.75rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background: #020617;
+        color: #f8fafc;
+        font-size: 0.85rem;
+      }
+      .alert {
+        padding: 0.6rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        font-size: 0.78rem;
+      }
+      .alert-error {
+        background: rgba(239, 68, 68, 0.16);
+        border: 1px solid #ef4444;
+      }
+      .alert-success {
+        background: rgba(34, 197, 94, 0.16);
+        border: 1px solid #22c55e;
+      }
+      .tab-row {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.7rem;
+        margin-bottom: 0.6rem;
+      }
+      .tab-pill {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        border-radius: 10px;
+        background: #020617;
+        border: 1px solid #1e293b;
+        text-align: center;
+        color: #e2e8f0;
+      }
+      .tab-pill.active {
+        background: #0ea5e9;
+        border-color: #0ea5e9;
+        color: #fff;
+        box-shadow: 0 0 10px #0ea5e9;
+      }
+      .section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 0.3rem;
+      }
+      #customer-map {
+        width: 100%;
+        height: 200px;
+        border-radius: 12px;
+        margin-top: 0.4rem;
+        border: 1px solid #1f2937;
+      }
+      .orders-list {
+        margin-top: 0.3rem;
+        max-height: 230px;
+        overflow-y: auto;
+      }
+      .order-card {
+        padding: 0.6rem;
+        border-radius: 12px;
+        background: #020617;
+        border: 1px solid #1f2937;
+        margin-bottom: 0.4rem;
+        font-size: 0.8rem;
+      }
+      .order-title {
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+      .order-meta {
+        font-size: 0.7rem;
+        color: #9ca3af;
+      }
+      .order-price {
+        margin-top: 0.25rem;
+        font-size: 0.78rem;
+        color: #bae6fd;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root">Loading...</div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // GANTI kalau server Ruby jalan di HP lain:
+      // const API_BASE = "http://192.168.xx.xx:3000";
+      const API_BASE = "http://localhost:3000";
+      const STORAGE_KEY = "ojekx_token_customer";
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      // 🔵 STATUS TEXT customer (sudah support waiting_merchant)
+      function getCustomerStatusText(order) {
+        const type = order.serviceType || "bike";
+        const s = order.status || "pending";
+
+        if (s === "waiting_merchant")
+          return "Pesanan dikirim ke restoran, menunggu konfirmasi resto";
+
+        if (s === "pending") return "Menunggu driver mengambil order";
+
+        if (type === "bike" || type === "car") {
+          if (s === "driver_on_the_way")
+            return "Driver menuju lokasi penjemputan";
+          if (s === "driver_arrived")
+            return "Driver sudah sampai di titik jemput";
+          if (s === "on_trip")
+            return "Dalam perjalanan menuju tujuan";
+          if (s === "completed") return "Perjalanan selesai";
+        }
+
+        if (type === "food") {
+          if (s === "driver_to_restaurant") return "Driver menuju restoran";
+          if (s === "at_restaurant")
+            return "Driver di restoran, sedang memproses pesanan";
+          if (s === "delivering_food")
+            return "Pesanan sedang diantar ke alamat kamu";
+          if (s === "completed") return "Pesanan selesai";
+        }
+
+        return "Status: " + s;
+      }
+
+      function CustomerApp() {
+        const [screen, setScreen] = useState("landing");
+        const [name, setName] = useState("");
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [token, setToken] = useState(null);
+        const [profile, setProfile] = useState(null);
+        const [message, setMessage] = useState(null);
+        const [loading, setLoading] = useState(false);
+
+        const [activeTab, setActiveTab] = useState("order");
+        const [pickup, setPickup] = useState("");
+        const [destination, setDestination] = useState("");
+        const [serviceType, setServiceType] = useState("bike");
+        const [orders, setOrders] = useState([]);
+
+        const [customerMap, setCustomerMap] = useState(null);
+
+        useEffect(() => {
+          const savedToken = localStorage.getItem(STORAGE_KEY);
+          if (savedToken) {
+            setToken(savedToken);
+            fetchProfile(savedToken);
+            fetchOrders(savedToken);
+          }
+        }, []);
+
+        useEffect(() => {
+          if (
+            screen === "dashboard" &&
+            !customerMap &&
+            window.L &&
+            document.getElementById("customer-map")
+          ) {
+            const m = L.map("customer-map").setView([-6.2, 106.8], 13);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              maxZoom: 19,
+              attribution: "&copy; OpenStreetMap",
+            }).addTo(m);
+            setCustomerMap(m);
+
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  const lat = pos.coords.latitude;
+                  const lng = pos.coords.longitude;
+                  m.setView([lat, lng], 16);
+                  L.marker([lat, lng])
+                    .addTo(m)
+                    .bindPopup("Perkiraan posisi kamu");
+                },
+                (err) => console.log("GPS error", err)
+              );
+            }
+          }
+        }, [screen, customerMap]);
+
+        function showMessage(type, text) {
+          setMessage({ type, text });
+          setTimeout(() => setMessage(null), 2500);
+        }
+
+        async function fetchProfile(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            setLoading(true);
+            const res = await fetch(API_BASE + "/profile", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) {
+              showMessage("error", "Gagal ambil profil. Silakan login ulang.");
+              setProfile(null);
+              return;
+            }
+            const data = await res.json();
+            setProfile(data);
+            setScreen("dashboard");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function fetchOrders(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            const res = await fetch(API_BASE + "/orders", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setOrders(data.orders || []);
+          } catch (e) {
+            console.log("fetchOrders error", e);
+          }
+        }
+
+        async function handleRegister(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name,
+                email,
+                password,
+                role: "customer",
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Register gagal");
+              return;
+            }
+            showMessage("success", "Register customer berhasil, silakan login.");
+            setScreen("login");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function handleLogin(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Login gagal");
+              return;
+            }
+            showMessage("success", "Login customer berhasil.");
+            setToken(data.token);
+            localStorage.setItem(STORAGE_KEY, data.token);
+            fetchProfile(data.token);
+            fetchOrders(data.token);
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        function handleLogout() {
+          setToken(null);
+          setProfile(null);
+          localStorage.removeItem(STORAGE_KEY);
+          setOrders([]);
+          setScreen("landing");
+          showMessage("success", "Logout berhasil.");
+        }
+
+        async function handleCreateOrder(e) {
+          e.preventDefault();
+          if (!token) {
+            showMessage("error", "Harus login sebagai customer.");
+            return;
+          }
+          if (!pickup.trim() || !destination.trim()) {
+            showMessage("error", "Isi lokasi jemput & tujuan.");
+            return;
+          }
+
+          const base = { bike: 10000, car: 20000, food: 15000 };
+          const price = base[serviceType] || 10000;
+
+          try {
+            setLoading(true);
+            const res = await fetch(API_BASE + "/order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({
+                pickup: pickup.trim(),
+                destination: destination.trim(),
+                serviceType,
+                price,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Gagal membuat order");
+              return;
+            }
+            showMessage("success", "Order dibuat.");
+            setPickup("");
+            setDestination("");
+            fetchOrders(token);
+            setActiveTab("history");
+          } catch {
+            showMessage("error", "Error koneksi saat membuat order.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        const estimatePrice = (() => {
+          const base = { bike: 10000, car: 20000, food: 15000 };
+          return base[serviceType] || 10000;
+        })();
+
+        function renderLanding() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title">
+                    OjekX <span className="hero-highlight">Customer</span>
+                  </div>
+                  <p className="hero-sub">
+                    Pesan ojek, mobil, atau makanan dari satu panel sederhana.
+                  </p>
+                </div>
+              </div>
+              <div style={{ marginTop: "0.6rem" }}>
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={() => setScreen("login")}
+                >
+                  Masuk Customer
+                </button>
+                <button
+                  className="btn btn-outline btn-block"
+                  style={{ marginTop: "0.5rem" }}
+                  onClick={() => setScreen("register")}
+                >
+                  Daftar Customer
+                </button>
+              </div>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Mode demo • backend Ruby di http://localhost:3000
+              </p>
+            </section>
+          );
+        }
+
+        function renderRegister() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Daftar <span className="hero-highlight">Customer</span>
+                  </div>
+                  <p className="hero-sub">
+                    Akun customer tersimpan di users.json dengan role customer.
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleRegister}>
+                <div className="form-group">
+                  <label>Nama Lengkap</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="contoh: Rani Pratiwi"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="customer1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="minimal 6 karakter"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Mendaftar..." : "Daftar Customer"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Sudah punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("login");
+                  }}
+                >
+                  Masuk di sini
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderLogin() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Masuk <span className="hero-highlight">Customer</span>
+                  </div>
+                  <p className="hero-sub">
+                    Login untuk membuat order dan melihat riwayat perjalanan.
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleLogin}>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="customer1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Masuk..." : "Masuk"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Belum punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("register");
+                  }}
+                >
+                  Daftar dulu
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderDashboard() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div style={{ flex: 1 }}>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Hai,{" "}
+                    <span className="hero-highlight">
+                      {profile ? profile.name : "Customer"}
+                    </span>
+                  </div>
+                  <p className="hero-sub" style={{ marginBottom: 0 }}>
+                    Pesan perjalanan atau makanan dari satu app.
+                  </p>
+                </div>
+                <div className="avatar-wrapper">
+                  <div className="avatar-placeholder">
+                    {profile && profile.name
+                      ? profile.name
+                          .split(" ")
+                          .slice(0, 2)
+                          .map((n) => n[0]?.toUpperCase())
+                          .join("")
+                      : "CX"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="tab-row">
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "order" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("order")}
+                >
+                  Pesan
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "history" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("history")}
+                >
+                  Riwayat
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "profile" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("profile")}
+                >
+                  Profil
+                </button>
+              </div>
+
+              {activeTab === "order" && (
+                <div style={{ marginTop: "0.4rem" }}>
+                  <div className="section-title">Lokasi & order</div>
+                  <div id="customer-map"></div>
+                  <p className="small-text" style={{ marginTop: "0.35rem" }}>
+                    Aktifkan GPS dan izinkan akses lokasi di browser agar titik
+                    kamu lebih akurat.
+                  </p>
+
+                  <form
+                    onSubmit={handleCreateOrder}
+                    style={{ marginTop: "0.5rem" }}
+                  >
+                    <div className="form-group">
+                      <label>Lokasi jemput</label>
+                      <input
+                        value={pickup}
+                        onChange={(e) => setPickup(e.target.value)}
+                        placeholder="contoh: Rumah, Jl. Mawar No. 10"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Tujuan</label>
+                      <input
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value)}
+                        placeholder="contoh: Mall Central, Lobby Utama"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Layanan</label>
+                      <select
+                        value={serviceType}
+                        onChange={(e) => setServiceType(e.target.value)}
+                      >
+                        <option value="bike">Ojek Motor</option>
+                        <option value="car">Mobil</option>
+                        <option value="food">Food Delivery</option>
+                      </select>
+                    </div>
+                    <p className="small-text">
+                      Perkiraan tarif:{" "}
+                      <b>{formatRupiah(estimatePrice)}</b>
+                      <br />
+                      (Demo: tarif masih flat, belum hitung jarak.)
+                    </p>
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-block"
+                      disabled={loading}
+                    >
+                      {loading ? "Mengirim..." : "Buat Order"}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {activeTab === "history" && (
+                <div style={{ marginTop: "0.4rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "0.3rem",
+                    }}
+                  >
+                    <div className="section-title">Order saya</div>
+                    <button
+                      className="btn btn-outline"
+                      style={{
+                        padding: "0.3rem 0.7rem",
+                        fontSize: "0.75rem",
+                      }}
+                      onClick={() => {
+                        fetchOrders();
+                        showMessage("success", "Riwayat diperbarui.");
+                      }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+
+                  {orders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada order. Coba buat order di tab Pesan.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {orders
+                        .slice()
+                        .reverse()
+                        .map((o) => (
+                          <div key={o.id} className="order-card">
+                            <div className="order-title">
+                              {o.pickup} → {o.destination}
+                            </div>
+                            <div className="order-meta">
+                              {o.serviceType.toUpperCase()} •{" "}
+                              {new Date(o.createdAt).toLocaleString("id-ID", {
+                                day: "2-digit",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              <br />
+                              {getCustomerStatusText(o)}
+                            </div>
+                            <div className="order-price">
+                              Tarif: <b>{formatRupiah(o.price || 0)}</b>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "profile" && (
+                <div style={{ marginTop: "0.4rem" }}>
+                  <div className="section-title">Profil customer</div>
+                  <p className="small-text" style={{ marginTop: "0.5rem" }}>
+                    Nama: <b>{profile ? profile.name : "-"}</b>
+                    <br />
+                    Email: <b>{profile ? profile.email : "-"}</b>
+                    <br />
+                    Role: <b>{profile ? profile.role : "-"}</b>
+                  </p>
+                  <button
+                    className="btn btn-outline btn-block"
+                    style={{ marginTop: "0.7rem" }}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </section>
+          );
+        }
+
+        if (screen === "landing") return renderLanding();
+        if (screen === "register") return renderRegister();
+        if (screen === "login") return renderLogin();
+        return renderDashboard();
+      }
+
+      function AppShell() {
+        return (
+          <div className="app-root">
+            <div className="app-shell">
+              <header className="app-header">
+                <div>
+                  <div className="app-title">OjekX • Customer</div>
+                  <div className="app-subtitle">
+                    UI mobile, sinkron dengan resto & driver
+                  </div>
+                </div>
+                <div className="logo-dot">CX</div>
+              </header>
+              <main className="main-area">
+                <CustomerApp />
+              </main>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<AppShell />);
+    </script>
+  </body>
+</html>

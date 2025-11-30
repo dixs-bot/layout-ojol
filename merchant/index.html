@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OjekX Merchant Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- React Production -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+          "Segoe UI", sans-serif;
+        background: #020617;
+        color: #e2e8f0;
+      }
+      .app-root {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .app-shell {
+        width: 100%;
+        max-width: 520px;
+      }
+      .app-header {
+        background: #0f172a;
+        border-bottom: 1px solid #1e293b;
+        padding: 1rem 1rem 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .app-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      .app-subtitle {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .logo-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #6366f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 0 10px #6366f1;
+      }
+      .main-area {
+        padding: 0.75rem 1rem 1rem;
+      }
+      .card {
+        padding: 1rem;
+        background: #0f172a;
+        border-radius: 16px;
+        border: 1px solid #1f2937;
+      }
+      .hero-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-bottom: 0.6rem;
+      }
+      .hero-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .hero-highlight {
+        color: #6366f1;
+      }
+      .hero-sub {
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+      .avatar-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        border: 2px solid #6366f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+      }
+      .avatar-placeholder {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .btn {
+        border: none;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-primary {
+        background: #6366f1;
+        color: #e5e7eb;
+        box-shadow: 0 0 10px #6366f1;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid #38bdf8;
+        color: #38bdf8;
+      }
+      .btn-ghost {
+        background: transparent;
+        border-radius: 999px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+        border: 1px solid transparent;
+        color: #9ca3af;
+      }
+      .btn-ghost:hover {
+        border-color: #1e293b;
+      }
+      .small-text {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .form-group {
+        margin-top: 0.7rem;
+      }
+      .form-group label {
+        font-size: 0.75rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      input {
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background: #020617;
+        color: #f8fafc;
+        font-size: 0.85rem;
+      }
+      .alert {
+        padding: 0.6rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        font-size: 0.78rem;
+      }
+      .alert-error {
+        background: rgba(239, 68, 68, 0.16);
+        border: 1px solid #ef4444;
+      }
+      .alert-success {
+        background: rgba(34, 197, 94, 0.16);
+        border: 1px solid #22c55e;
+      }
+      .tab-row {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.7rem;
+        margin-bottom: 0.6rem;
+      }
+      .tab-pill {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        border-radius: 10px;
+        background: #020617;
+        border: 1px solid #1e293b;
+        text-align: center;
+        color: #e2e8f0;
+      }
+      .tab-pill.active {
+        background: #6366f1;
+        border-color: #6366f1;
+        color: #e5e7eb;
+        box-shadow: 0 0 10px #6366f1;
+      }
+      .section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 0.3rem;
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+      }
+      .kpi-card {
+        padding: 0.55rem;
+        border-radius: 12px;
+        background: #020617;
+        border: 1px solid #1f2937;
+        font-size: 0.8rem;
+      }
+      .kpi-label {
+        font-size: 0.68rem;
+        color: #9ca3af;
+      }
+      .kpi-value {
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-top: 0.1rem;
+      }
+      .orders-list {
+        margin-top: 0.3rem;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .order-row {
+        padding: 0.55rem 0.4rem;
+        border-bottom: 1px solid #111827;
+        font-size: 0.78rem;
+      }
+      .order-row:last-child {
+        border-bottom: none;
+      }
+      .order-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+      .pill-status {
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.7rem;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+      }
+      .badge-service {
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.68rem;
+        border: 1px solid #1f2937;
+        color: #a5b4fc;
+      }
+      .bottom-note {
+        margin-top: 0.4rem;
+        font-size: 0.72rem;
+        color: #9ca3af;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root">Loading...</div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      const API_BASE = "http://localhost:3000"; // ganti kalau server di HP lain
+      const STORAGE_KEY = "ojekx_token_merchant";
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      function statusDisplay(order) {
+        const s = order.status || "pending";
+        if (s === "waiting_merchant")
+          return "Menunggu resto konfirmasi";
+        if (s === "pending")
+          return "Menunggu driver mengambil pesanan";
+        if (s === "driver_to_restaurant")
+          return "Driver dalam perjalanan ke restoran";
+        if (s === "at_restaurant")
+          return "Driver sudah di restoran";
+        if (s === "delivering_food")
+          return "Pesanan sedang diantar ke customer";
+        if (s === "completed")
+          return "Pesanan selesai";
+        return s;
+      }
+
+      function MerchantApp() {
+        const [screen, setScreen] = useState("landing");
+        const [name, setName] = useState("");
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [token, setToken] = useState(null);
+        const [profile, setProfile] = useState(null);
+        const [message, setMessage] = useState(null);
+        const [loading, setLoading] = useState(false);
+
+        const [activeTab, setActiveTab] = useState("overview");
+        const [orders, setOrders] = useState([]);
+        const [actionMsg, setActionMsg] = useState("");
+
+        useEffect(() => {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            setToken(saved);
+            fetchProfile(saved);
+            fetchOrders(saved);
+          }
+        }, []);
+
+        function showMessage(type, text) {
+          setMessage({ type, text });
+          setTimeout(() => setMessage(null), 2500);
+        }
+
+        async function fetchProfile(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            setLoading(true);
+            const res = await fetch(API_BASE + "/profile", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) {
+              showMessage("error", "Gagal ambil profil. Login ulang.");
+              setProfile(null);
+              return;
+            }
+            const data = await res.json();
+            setProfile(data);
+            setScreen("dashboard");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function fetchOrders(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            const res = await fetch(API_BASE + "/orders", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            const all = data.orders || [];
+            const filtered = all.filter((o) => o.serviceType === "food");
+            setOrders(filtered);
+          } catch (e) {
+            console.log("fetchOrders merchant error", e);
+          }
+        }
+
+        // SELALU ada tombol "Pesanan siap, kirim ke driver"
+        async function handleRelease(orderId) {
+          if (!token) {
+            showMessage("error", "Harus login merchant.");
+            return;
+          }
+          try {
+            setLoading(true);
+            setActionMsg("Mengirim pesanan ke driver...");
+
+            const res = await fetch(API_BASE + "/merchant/release", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ orderId }),
+            });
+
+            const text = await res.text();
+            let data;
+            try {
+              data = JSON.parse(text);
+            } catch (e) {
+              data = { message: text };
+            }
+
+            if (!res.ok) {
+              showMessage("error", data.message || "Gagal kirim ke driver");
+              setActionMsg("Gagal: " + (data.message || "tidak diketahui"));
+              return;
+            }
+
+            showMessage("success", "Pesanan dikirim ke driver.");
+            setActionMsg("Berhasil kirim ke driver.");
+
+            setOrders((prev) =>
+              prev.map((o) =>
+                o.id === orderId
+                  ? {
+                      ...o,
+                      status: "pending",
+                      merchantEmail:
+                        profile && profile.email
+                          ? profile.email
+                          : o.merchantEmail || null,
+                    }
+                  : o
+              )
+            );
+          } catch (err) {
+            console.log("release error", err);
+            showMessage("error", "Error koneksi saat kirim ke driver.");
+            setActionMsg("Error koneksi saat kirim ke driver.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function handleRegister(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name,
+                email,
+                password,
+                role: "merchant",
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Register gagal");
+              return;
+            }
+            showMessage(
+              "success",
+              "Register merchant berhasil, silakan login."
+            );
+            setScreen("login");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function handleLogin(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Login gagal");
+              return;
+            }
+            showMessage("success", "Login merchant berhasil.");
+            setToken(data.token);
+            localStorage.setItem(STORAGE_KEY, data.token);
+            fetchProfile(data.token);
+            fetchOrders(data.token);
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        function handleLogout() {
+          setToken(null);
+          setProfile(null);
+          localStorage.removeItem(STORAGE_KEY);
+          setOrders([]);
+          setScreen("landing");
+          showMessage("success", "Logout merchant berhasil.");
+        }
+
+        const totalOrders = orders.length;
+        const todayOrders = orders.filter((o) => {
+          if (!o.createdAt) return false;
+          const d = new Date(o.createdAt);
+          const now = new Date();
+          return (
+            d.getFullYear() === now.getFullYear() &&
+            d.getMonth() === now.getMonth() &&
+            d.getDate() === now.getDate()
+          );
+        }).length;
+        const waitingOrders = orders.filter(
+          (o) => o.status === "waiting_merchant"
+        ).length;
+
+        function renderLanding() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title">
+                    OjekX <span className="hero-highlight">Merchant</span>
+                  </div>
+                  <p className="hero-sub">
+                    Panel untuk restoran / pedagang. Lihat dan kelola pesanan
+                    food delivery.
+                  </p>
+                </div>
+              </div>
+              <div style={{ marginTop: "0.6rem" }}>
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={() => setScreen("login")}
+                >
+                  Masuk Merchant
+                </button>
+                <button
+                  className="btn btn-outline btn-block"
+                  style={{ marginTop: "0.5rem" }}
+                  onClick={() => setScreen("register")}
+                >
+                  Daftar Merchant
+                </button>
+              </div>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Pastikan backend Ruby sudah punya role <b>merchant</b> dan
+                endpoint <code>/orders</code>, <code>/merchant/release</code>.
+              </p>
+            </section>
+          );
+        }
+
+        function renderRegister() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Daftar <span className="hero-highlight">Merchant</span>
+                  </div>
+                  <p className="hero-sub">
+                    Satu akun untuk memantau pesanan makanan yang masuk.
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleRegister}>
+                <div className="form-group">
+                  <label>Nama resto / toko</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="contoh: Warung Sate Pak D"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="merchant1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="minimal 6 karakter"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Mendaftar..." : "Daftar Merchant"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Sudah punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("login");
+                  }}
+                >
+                  Masuk di sini
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderLogin() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Masuk <span className="hero-highlight">Merchant</span>
+                  </div>
+                  <p className="hero-sub">
+                    Pantau pesanan food delivery yang masuk ke restoran kamu.
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleLogin}>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="merchant1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Masuk..." : "Masuk"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Belum punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("register");
+                  }}
+                >
+                  Daftar merchant dulu
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderDashboard() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+
+              <div className="hero-row">
+                <div style={{ flex: 1 }}>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Hai,{" "}
+                    <span className="hero-highlight">
+                      {profile ? profile.name : "Merchant"}
+                    </span>
+                  </div>
+                  <p className="hero-sub" style={{ marginBottom: 0 }}>
+                    Kelola pesanan makanan yang masuk dari aplikasi OjekX.
+                  </p>
+                </div>
+                <div className="avatar-wrapper">
+                  <div className="avatar-placeholder">
+                    {profile && profile.name
+                      ? profile.name
+                          .split(" ")
+                          .slice(0, 2)
+                          .map((n) => n[0]?.toUpperCase())
+                          .join("")
+                      : "MX"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="tab-row">
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "overview" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("overview")}
+                >
+                  Overview
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "orders" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("orders")}
+                >
+                  Pesanan
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "profile" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("profile")}
+                >
+                  Profil
+                </button>
+              </div>
+
+              {activeTab === "overview" && (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div className="section-title">Ringkasan pesanan food</div>
+                    <button
+                      className="btn-ghost"
+                      onClick={() => {
+                        fetchOrders();
+                        showMessage("success", "Data pesanan diperbarui.");
+                      }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+
+                  <div className="kpi-grid">
+                    <div className="kpi-card">
+                      <div className="kpi-label">Hari ini</div>
+                      <div className="kpi-value">{todayOrders}</div>
+                    </div>
+                    <div className="kpi-card">
+                      <div className="kpi-label">Menunggu resto</div>
+                      <div className="kpi-value">{waitingOrders}</div>
+                    </div>
+                    <div className="kpi-card">
+                      <div className="kpi-label">Total pesanan</div>
+                      <div className="kpi-value">{totalOrders}</div>
+                    </div>
+                  </div>
+
+                  <p
+                    className="small-text"
+                    style={{ marginTop: "0.7rem", lineHeight: 1.5 }}
+                  >
+                    Alur: Customer pesan FOOD → resto lihat di tab Pesanan →
+                    klik <b>"Pesanan siap, kirim ke driver"</b> → pesanan
+                    muncul di panel driver.
+                  </p>
+                </>
+              )}
+
+              {activeTab === "orders" && (
+                <div style={{ marginTop: "0.2rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div className="section-title">Daftar pesanan makanan</div>
+                    <button
+                      className="btn-ghost"
+                      onClick={() => {
+                        fetchOrders();
+                        showMessage("success", "Pesanan diperbarui.");
+                      }}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+
+                  {orders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada pesanan food, atau endpoint{" "}
+                      <code>/orders</code> belum mengembalikan data.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {orders
+                        .slice()
+                        .reverse()
+                        .map((o) => (
+                          <div key={o.id} className="order-row">
+                            <div className="order-top">
+                              <div>
+                                <div>
+                                  <b>{o.pickup}</b> → {o.destination}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.7rem",
+                                    color: "#9ca3af",
+                                  }}
+                                >
+                                  {new Date(
+                                    o.createdAt
+                                  ).toLocaleString("id-ID", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <div className="badge-service">
+                                  FOOD DELIVERY
+                                </div>
+                                <div
+                                  style={{
+                                    marginTop: "0.2rem",
+                                    fontSize: "0.7rem",
+                                    color: "#a5b4fc",
+                                  }}
+                                >
+                                  Tarif:{" "}
+                                  <b>{formatRupiah(o.price || 0)}</b>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                marginTop: "0.25rem",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: "0.5rem",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "0.7rem",
+                                  color: "#9ca3af",
+                                }}
+                              >
+                                Customer: {o.customerEmail || "-"}
+                                <br />
+                                Driver: {o.driverEmail || "-"}
+                                <br />
+                                <span className="pill-status">
+                                  {statusDisplay(o)}
+                                </span>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <button
+                                  className="btn btn-primary"
+                                  style={{
+                                    padding: "0.3rem 0.6rem",
+                                    fontSize: "0.75rem",
+                                  }}
+                                  onClick={() => handleRelease(o.id)}
+                                  disabled={loading}
+                                >
+                                  Pesanan siap, kirim ke driver
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {actionMsg && (
+                    <div className="bottom-note">
+                      Status aksi: {actionMsg}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "profile" && (
+                <div style={{ marginTop: "0.2rem" }}>
+                  <div className="section-title">Profil merchant</div>
+                  <p className="small-text" style={{ marginTop: "0.5rem" }}>
+                    Nama: <b>{profile ? profile.name : "-"}</b>
+                    <br />
+                    Email: <b>{profile ? profile.email : "-"}</b>
+                    <br />
+                    Role: <b>{profile ? profile.role : "-"}</b>
+                  </p>
+                  <button
+                    className="btn btn-outline btn-block"
+                    style={{ marginTop: "0.7rem" }}
+                    onClick={handleLogout}
+                  >
+                    Logout merchant
+                  </button>
+                </div>
+              )}
+            </section>
+          );
+        }
+
+        if (screen === "landing") return renderLanding();
+        if (screen === "register") return renderRegister();
+        if (screen === "login") return renderLogin();
+        return renderDashboard();
+      }
+
+      function AppShell() {
+        return (
+          <div className="app-root">
+            <div className="app-shell">
+              <header className="app-header">
+                <div>
+                  <div className="app-title">OjekX • Merchant Panel</div>
+                  <div className="app-subtitle">
+                    Restoran & pedagang food delivery
+                  </div>
+                </div>
+                <div className="logo-dot">MX</div>
+              </header>
+              <main className="main-area">
+                <MerchantApp />
+              </main>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<AppShell />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OjekX Driver Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- React Production -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+          "Segoe UI", sans-serif;
+        background: #020617;
+        color: #e2e8f0;
+      }
+      .app-root {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .app-shell {
+        width: 100%;
+        max-width: 520px;
+      }
+      .app-header {
+        background: #0f172a;
+        border-bottom: 1px solid #1e293b;
+        padding: 1rem 1rem 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .app-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      .app-subtitle {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .logo-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #22c55e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        box-shadow: 0 0 10px #22c55e;
+      }
+      .main-area {
+        padding: 0.75rem 1rem 1rem;
+      }
+      .card {
+        padding: 1rem;
+        background: #0f172a;
+        border-radius: 16px;
+        border: 1px solid #1f2937;
+      }
+      .hero-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        margin-bottom: 0.6rem;
+      }
+      .hero-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .hero-highlight {
+        color: #22c55e;
+      }
+      .hero-sub {
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+      .avatar-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 999px;
+        border: 2px solid #22c55e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #020617;
+      }
+      .avatar-placeholder {
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .btn {
+        border: none;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-primary {
+        background: #22c55e;
+        color: #022c22;
+        box-shadow: 0 0 10px #22c55e;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid #38bdf8;
+        color: #38bdf8;
+      }
+      .btn-ghost {
+        background: transparent;
+        border-radius: 999px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+        border: 1px solid transparent;
+        color: #9ca3af;
+      }
+      .btn-ghost:hover {
+        border-color: #1e293b;
+      }
+      .small-text {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .form-group {
+        margin-top: 0.7rem;
+      }
+      .form-group label {
+        font-size: 0.75rem;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      input {
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 10px;
+        border: 1px solid #334155;
+        background: #020617;
+        color: #f8fafc;
+        font-size: 0.85rem;
+      }
+      .alert {
+        padding: 0.6rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        font-size: 0.78rem;
+      }
+      .alert-error {
+        background: rgba(239, 68, 68, 0.16);
+        border: 1px solid #ef4444;
+      }
+      .alert-success {
+        background: rgba(34, 197, 94, 0.16);
+        border: 1px solid #22c55e;
+      }
+      .tab-row {
+        display: flex;
+        gap: 0.6rem;
+        margin-top: 0.7rem;
+        margin-bottom: 0.6rem;
+      }
+      .tab-pill {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        border-radius: 10px;
+        background: #020617;
+        border: 1px solid #1e293b;
+        text-align: center;
+        color: #e2e8f0;
+      }
+      .tab-pill.active {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: #022c22;
+        box-shadow: 0 0 10px #22c55e;
+      }
+      .section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 0.3rem;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+      }
+      .status-online {
+        background: #22c55e;
+        box-shadow: 0 0 8px #22c55e;
+      }
+      .status-offline {
+        background: #64748b;
+      }
+      .orders-list {
+        margin-top: 0.3rem;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .order-card {
+        padding: 0.65rem 0.5rem;
+        border-radius: 12px;
+        background: #020617;
+        border: 1px solid #1f2937;
+        font-size: 0.8rem;
+        margin-bottom: 0.45rem;
+      }
+      .order-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+      .order-route {
+        font-weight: 600;
+      }
+      .order-meta {
+        font-size: 0.72rem;
+        color: #9ca3af;
+        margin-top: 0.1rem;
+      }
+      .badge-service {
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.68rem;
+        border: 1px solid #1f2937;
+        text-align: right;
+      }
+      .badge-bike {
+        color: #fbbf24;
+      }
+      .badge-car {
+        color: #38bdf8;
+      }
+      .badge-food {
+        color: #fb7185;
+      }
+      .order-footer {
+        margin-top: 0.35rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .price-text {
+        font-size: 0.8rem;
+        color: #e5e7eb;
+      }
+      .pill-status {
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        font-size: 0.7rem;
+        border: 1px solid #1f2937;
+        color: #e5e7eb;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root">Loading...</div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      const API_BASE = "http://localhost:3000"; // ganti kalau server di HP lain
+      const STORAGE_KEY = "ojekx_token_driver";
+
+      function formatRupiah(n) {
+        if (!n || isNaN(n)) return "Rp 0";
+        return "Rp " + Number(n).toLocaleString("id-ID");
+      }
+
+      function statusTextDriver(order) {
+        const t = order.serviceType || "bike";
+        const s = order.status || "pending";
+
+        if (t === "food") {
+          if (s === "driver_to_restaurant") return "Menuju restoran";
+          if (s === "at_restaurant") return "Sudah di restoran";
+          if (s === "delivering_food") return "Mengantar pesanan ke customer";
+          if (s === "completed") return "Pesanan makanan selesai";
+          if (s === "pending") return "Menunggu driver mengambil order";
+        } else {
+          if (s === "driver_on_the_way") return "Menuju lokasi jemput";
+          if (s === "driver_arrived") return "Sudah sampai titik jemput";
+          if (s === "on_trip") return "Sedang mengantar penumpang";
+          if (s === "completed") return "Perjalanan selesai";
+          if (s === "pending") return "Menunggu driver mengambil order";
+        }
+        return "Status: " + s;
+      }
+
+      function nextStepButton(order) {
+        const t = order.serviceType || "bike";
+        const s = order.status || "";
+
+        // STEP RIDE
+        if (t === "bike" || t === "car") {
+          if (s === "driver_on_the_way") {
+            return { label: "Sudah tiba di titik jemput", next: "driver_arrived" };
+          }
+          if (s === "driver_arrived") {
+            return { label: "Mulai perjalanan", next: "on_trip" };
+          }
+          if (s === "on_trip") {
+            return { label: "Selesai antar", next: "completed" };
+          }
+          return null;
+        }
+
+        // STEP FOOD
+        if (t === "food") {
+          if (s === "driver_to_restaurant") {
+            return { label: "Sudah sampai di restoran", next: "at_restaurant" };
+          }
+          if (s === "at_restaurant") {
+            return {
+              label: "Pesanan siap, antar ke customer",
+              next: "delivering_food",
+            };
+          }
+          if (s === "delivering_food") {
+            return { label: "Pesanan sudah sampai", next: "completed" };
+          }
+          return null;
+        }
+
+        return null;
+      }
+
+      function serviceBadge(order) {
+        const t = order.serviceType || "bike";
+        if (t === "bike") return { text: "BIKE", className: "badge-service badge-bike" };
+        if (t === "car") return { text: "CAR", className: "badge-service badge-car" };
+        if (t === "food") return { text: "FOOD DELIVERY", className: "badge-service badge-food" };
+        return { text: t.toUpperCase(), className: "badge-service" };
+      }
+
+      function DriverApp() {
+        const [screen, setScreen] = useState("landing");
+        const [name, setName] = useState("");
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [token, setToken] = useState(null);
+        const [profile, setProfile] = useState(null);
+        const [message, setMessage] = useState(null);
+        const [loading, setLoading] = useState(false);
+
+        const [isOnline, setIsOnline] = useState(false);
+        const [activeTab, setActiveTab] = useState("open"); // open / active / history
+
+        const [openOrders, setOpenOrders] = useState([]);
+        const [myOrders, setMyOrders] = useState([]);
+
+        useEffect(() => {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            setToken(saved);
+            fetchProfile(saved);
+            fetchMyOrders(saved);
+            fetchOpenOrders(saved);
+          }
+        }, []);
+
+        function showMessage(type, text) {
+          setMessage({ type, text });
+          setTimeout(() => setMessage(null), 2500);
+        }
+
+        async function fetchProfile(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            setLoading(true);
+            const res = await fetch(API_BASE + "/profile", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) {
+              showMessage("error", "Gagal ambil profil. Login ulang.");
+              setProfile(null);
+              return;
+            }
+            const data = await res.json();
+            setProfile(data);
+            setScreen("dashboard");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function fetchOpenOrders(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            if (!isOnline) {
+              setOpenOrders([]);
+              return;
+            }
+            const res = await fetch(API_BASE + "/orders/open", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setOpenOrders(data.orders || []);
+          } catch (e) {
+            console.log("fetchOpenOrders error", e);
+          }
+        }
+
+        async function fetchMyOrders(currentToken) {
+          try {
+            const usedToken = currentToken || token;
+            if (!usedToken) return;
+            const res = await fetch(API_BASE + "/orders", {
+              headers: { Authorization: "Bearer " + usedToken },
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            setMyOrders(data.orders || []);
+          } catch (e) {
+            console.log("fetchMyOrders error", e);
+          }
+        }
+
+        async function handleRegister(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/register", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name,
+                email,
+                password,
+                role: "driver",
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Register gagal");
+              return;
+            }
+            showMessage("success", "Register driver berhasil, silakan login.");
+            setScreen("login");
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function handleLogin(e) {
+          e.preventDefault();
+          setLoading(true);
+          setMessage(null);
+          try {
+            const res = await fetch(API_BASE + "/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Login gagal");
+              return;
+            }
+            showMessage("success", "Login driver berhasil.");
+            setToken(data.token);
+            localStorage.setItem(STORAGE_KEY, data.token);
+            fetchProfile(data.token);
+            fetchMyOrders(data.token);
+            fetchOpenOrders(data.token);
+          } catch {
+            showMessage("error", "Error koneksi ke backend.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        function handleLogout() {
+          setToken(null);
+          setProfile(null);
+          localStorage.removeItem(STORAGE_KEY);
+          setOpenOrders([]);
+          setMyOrders([]);
+          setIsOnline(false);
+          setScreen("landing");
+          showMessage("success", "Logout driver berhasil.");
+        }
+
+        function toggleOnline() {
+          const newMode = !isOnline;
+          setIsOnline(newMode);
+          if (newMode) {
+            showMessage("success", "Kamu sekarang ONLINE.");
+            fetchOpenOrders();
+          } else {
+            showMessage("success", "Kamu OFFLINE, tidak menerima order baru.");
+            setOpenOrders([]);
+          }
+        }
+
+        async function handleAccept(orderId) {
+          if (!token) {
+            showMessage("error", "Harus login driver.");
+            return;
+          }
+          try {
+            setLoading(true);
+            const res = await fetch(API_BASE + "/orders/accept", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ orderId }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Gagal ambil order");
+              return;
+            }
+            showMessage("success", "Order berhasil diambil.");
+            await fetchOpenOrders(token);
+            await fetchMyOrders(token);
+            setActiveTab("active");
+          } catch {
+            showMessage("error", "Error koneksi saat ambil order.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        async function handleUpdateStatus(orderId, newStatus) {
+          if (!token) {
+            showMessage("error", "Harus login driver.");
+            return;
+          }
+          try {
+            setLoading(true);
+            const res = await fetch(API_BASE + "/orders/status", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
+              body: JSON.stringify({ orderId, status: newStatus }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              showMessage("error", data.message || "Gagal update status");
+              return;
+            }
+            showMessage("success", "Status order diupdate.");
+            await fetchMyOrders(token);
+          } catch {
+            showMessage("error", "Error koneksi saat update status.");
+          } finally {
+            setLoading(false);
+          }
+        }
+
+        const activeOrders = myOrders.filter((o) => o.status !== "completed");
+        const historyOrders = myOrders.filter((o) => o.status === "completed");
+
+        function renderLanding() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title">
+                    OjekX <span className="hero-highlight">Driver</span>
+                  </div>
+                  <p className="hero-sub">
+                    Satu panel untuk terima order motor, mobil, dan food
+                    delivery.
+                  </p>
+                </div>
+              </div>
+              <div style={{ marginTop: "0.6rem" }}>
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={() => setScreen("login")}
+                >
+                  Masuk Driver
+                </button>
+                <button
+                  className="btn btn-outline btn-block"
+                  style={{ marginTop: "0.5rem" }}
+                  onClick={() => setScreen("register")}
+                >
+                  Daftar Driver
+                </button>
+              </div>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Mode demo • backend Ruby di http://localhost:3000
+              </p>
+            </section>
+          );
+        }
+
+        function renderRegister() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Daftar <span className="hero-highlight">Driver</span>
+                  </div>
+                  <p className="hero-sub">
+                    Akun driver tersimpan di users.json dengan role "driver".
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleRegister}>
+                <div className="form-group">
+                  <label>Nama lengkap</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="contoh: Budi Santoso"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="driver1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="minimal 6 karakter"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Mendaftar..." : "Daftar Driver"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Sudah punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("login");
+                  }}
+                >
+                  Masuk di sini
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderLogin() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+              <div className="hero-row">
+                <div>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Masuk <span className="hero-highlight">Driver</span>
+                  </div>
+                  <p className="hero-sub">
+                    Login untuk menerima order dari customer & resto.
+                  </p>
+                </div>
+              </div>
+              <form onSubmit={handleLogin}>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="driver1@test.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-block"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Masuk..." : "Masuk"}
+                </button>
+              </form>
+              <p className="small-text" style={{ marginTop: "0.8rem" }}>
+                Belum punya akun?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setScreen("register");
+                  }}
+                >
+                  Daftar driver dulu
+                </a>
+              </p>
+            </section>
+          );
+        }
+
+        function renderDashboard() {
+          return (
+            <section className="card">
+              {message && (
+                <div
+                  className={
+                    "alert " +
+                    (message.type === "error"
+                      ? "alert-error"
+                      : "alert-success")
+                  }
+                >
+                  {message.text}
+                </div>
+              )}
+
+              <div className="hero-row">
+                <div style={{ flex: 1 }}>
+                  <div className="hero-title" style={{ fontSize: "1.3rem" }}>
+                    Hai,{" "}
+                    <span className="hero-highlight">
+                      {profile ? profile.name : "Driver"}
+                    </span>
+                  </div>
+                  <p className="hero-sub" style={{ marginBottom: 0 }}>
+                    Pantau order motor, mobil, dan food dari satu panel.
+                  </p>
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      marginBottom: "0.25rem",
+                      textAlign: "right",
+                    }}
+                  >
+                    <span
+                      className={
+                        "status-dot " +
+                        (isOnline ? "status-online" : "status-offline")
+                      }
+                    ></span>
+                    {isOnline ? "Online" : "Offline"}
+                  </div>
+                  <div className="avatar-wrapper">
+                    <div className="avatar-placeholder">
+                      {profile && profile.name
+                        ? profile.name
+                            .split(" ")
+                            .slice(0, 2)
+                            .map((n) => n[0]?.toUpperCase())
+                            .join("")
+                        : "DX"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                <button
+                  className="btn-outline"
+                  style={{ flex: 1, fontSize: "0.75rem" }}
+                  onClick={toggleOnline}
+                >
+                  {isOnline ? "Matikan Online" : "Aktifkan Online"}
+                </button>
+                <button
+                  className="btn-ghost"
+                  style={{ fontSize: "0.75rem" }}
+                  onClick={() => {
+                    fetchMyOrders();
+                    fetchOpenOrders();
+                    showMessage("success", "Data order diperbarui.");
+                  }}
+                >
+                  Refresh
+                </button>
+              </div>
+
+              <div className="tab-row">
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "open" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("open")}
+                >
+                  Order tersedia
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "active" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("active")}
+                >
+                  Order aktif
+                </button>
+                <button
+                  type="button"
+                  className={
+                    "tab-pill " + (activeTab === "history" ? "active" : "")
+                  }
+                  onClick={() => setActiveTab("history")}
+                >
+                  Riwayat
+                </button>
+              </div>
+
+              {activeTab === "open" && (
+                <div style={{ marginTop: "0.3rem" }}>
+                  <div className="section-title">Order yang bisa diambil</div>
+                  {!isOnline && (
+                    <p className="small-text">
+                      Kamu sedang <b>offline</b>. Aktifkan Online untuk melihat
+                      order baru dari customer & resto.
+                    </p>
+                  )}
+                  {isOnline && openOrders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada order tersedia. Coba refresh lagi.
+                    </p>
+                  ) : (
+                    isOnline && (
+                      <div className="orders-list">
+                        {openOrders.map((o) => {
+                          const badge = serviceBadge(o);
+                          return (
+                            <div key={o.id} className="order-card">
+                              <div className="order-top">
+                                <div>
+                                  <div className="order-route">
+                                    {o.pickup} → {o.destination}
+                                  </div>
+                                  <div className="order-meta">
+                                    {new Date(
+                                      o.createdAt
+                                    ).toLocaleString("id-ID", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </div>
+                                </div>
+                                <div style={{ textAlign: "right" }}>
+                                  <div className={badge.className}>
+                                    {badge.text}
+                                  </div>
+                                  <div
+                                    style={{
+                                      marginTop: "0.2rem",
+                                      fontSize: "0.7rem",
+                                      color: "#9ca3af",
+                                    }}
+                                  >
+                                    Tarif:{" "}
+                                    <b>{formatRupiah(o.price || 0)}</b>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="order-footer">
+                                <div className="small-text">
+                                  Dari: {o.customerEmail || "-"}
+                                </div>
+                                <button
+                                  className="btn btn-primary"
+                                  style={{
+                                    padding: "0.35rem 0.7rem",
+                                    fontSize: "0.78rem",
+                                  }}
+                                  onClick={() => handleAccept(o.id)}
+                                  disabled={loading}
+                                >
+                                  Ambil order
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              {activeTab === "active" && (
+                <div style={{ marginTop: "0.3rem" }}>
+                  <div className="section-title">Order aktif</div>
+                  {activeOrders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada order aktif. Ambil order dari tab Order tersedia.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {activeOrders
+                        .slice()
+                        .reverse()
+                        .map((o) => {
+                          const badge = serviceBadge(o);
+                          const nextBtn = nextStepButton(o);
+                          return (
+                            <div key={o.id} className="order-card">
+                              <div className="order-top">
+                                <div>
+                                  <div className="order-route">
+                                    {o.pickup} → {o.destination}
+                                  </div>
+                                  <div className="order-meta">
+                                    {new Date(
+                                      o.createdAt
+                                    ).toLocaleString("id-ID", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </div>
+                                </div>
+                                <div style={{ textAlign: "right" }}>
+                                  <div className={badge.className}>
+                                    {badge.text}
+                                  </div>
+                                  <div className="price-text">
+                                    {formatRupiah(o.price || 0)}
+                                  </div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: "0.35rem" }}>
+                                <span className="pill-status">
+                                  {statusTextDriver(o)}
+                                </span>
+                              </div>
+                              <div className="order-footer">
+                                <div className="small-text">
+                                  Customer: {o.customerEmail || "-"}
+                                  <br />
+                                  Fee driver:{" "}
+                                  <b>{formatRupiah(o.feeDriver || 0)}</b>
+                                </div>
+                                {nextBtn ? (
+                                  <button
+                                    className="btn btn-primary"
+                                    style={{
+                                      padding: "0.35rem 0.7rem",
+                                      fontSize: "0.75rem",
+                                    }}
+                                    onClick={() =>
+                                      handleUpdateStatus(o.id, nextBtn.next)
+                                    }
+                                    disabled={loading}
+                                  >
+                                    {nextBtn.label}
+                                  </button>
+                                ) : (
+                                  <span className="small-text">
+                                    Tidak ada aksi lanjutan.
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "history" && (
+                <div style={{ marginTop: "0.3rem" }}>
+                  <div className="section-title">Riwayat selesai</div>
+                  {historyOrders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada riwayat order selesai.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {historyOrders
+                        .slice()
+                        .reverse()
+                        .map((o) => {
+                          const badge = serviceBadge(o);
+                          return (
+                            <div key={o.id} className="order-card">
+                              <div className="order-top">
+                                <div>
+                                  <div className="order-route">
+                                    {o.pickup} → {o.destination}
+                                  </div>
+                                  <div className="order-meta">
+                                    {new Date(
+                                      o.createdAt
+                                    ).toLocaleString("id-ID", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </div>
+                                </div>
+                                <div style={{ textAlign: "right" }}>
+                                  <div className={badge.className}>
+                                    {badge.text}
+                                  </div>
+                                  <div className="price-text">
+                                    {formatRupiah(o.price || 0)}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="order-footer">
+                                <div className="small-text">
+                                  Fee total driver:{" "}
+                                  <b>{formatRupiah(o.feeDriver || 0)}</b>
+                                </div>
+                                <span className="pill-status">
+                                  Selesai
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          );
+        }
+
+        if (screen === "landing") return renderLanding();
+        if (screen === "register") return renderRegister();
+        if (screen === "login") return renderLogin();
+        return renderDashboard();
+      }
+
+      function AppShell() {
+        return (
+          <div className="app-root">
+            <div className="app-shell">
+              <header className="app-header">
+                <div>
+                  <div className="app-title">OjekX • Driver Panel</div>
+                  <div className="app-subtitle">
+                    Terima order ride & food dalam satu app
+                  </div>
+                </div>
+                <div className="logo-dot">DX</div>
+              </header>
+              <main className="main-area">
+                <DriverApp />
+              </main>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<AppShell />);
+    </script>
+  </body>
+</html>
