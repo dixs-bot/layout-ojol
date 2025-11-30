@@ -189,6 +189,11 @@
         color: #94a3b8;
         margin-bottom: 0.3rem;
       }
+      .section-subtitle {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin: 0.15rem 0 0.25rem;
+      }
       .kpi-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -265,6 +270,7 @@
         return "Rp " + Number(n).toLocaleString("id-ID");
       }
 
+      // Status khusus versi MERCHANT
       function statusDisplay(order) {
         const s = order.status || "pending";
         if (s === "waiting_merchant")
@@ -272,13 +278,13 @@
         if (s === "pending")
           return "Menunggu driver mengambil pesanan";
         if (s === "driver_to_restaurant")
-          return "Driver dalam perjalanan ke restoran";
+          return "Driver sudah menerima order, menuju restoran";
         if (s === "at_restaurant")
-          return "Driver sudah di restoran";
+          return "Driver sudah tiba di restoran";
         if (s === "delivering_food")
-          return "Pesanan sedang diantar ke customer";
+          return "Makanan sudah diambil driver, dalam perjalanan ke customer";
         if (s === "completed")
-          return "Pesanan selesai";
+          return "Pesanan selesai diantar ke customer";
         return s;
       }
 
@@ -350,7 +356,6 @@
           }
         }
 
-        // SELALU ada tombol "Pesanan siap, kirim ke driver"
         async function handleRelease(orderId) {
           if (!token) {
             showMessage("error", "Harus login merchant.");
@@ -386,20 +391,8 @@
             showMessage("success", "Pesanan dikirim ke driver.");
             setActionMsg("Berhasil kirim ke driver.");
 
-            setOrders((prev) =>
-              prev.map((o) =>
-                o.id === orderId
-                  ? {
-                      ...o,
-                      status: "pending",
-                      merchantEmail:
-                        profile && profile.email
-                          ? profile.email
-                          : o.merchantEmail || null,
-                    }
-                  : o
-              )
-            );
+            // refresh supaya status pindah ke pending, lalu akan muncul di "Sedang dikerjakan driver"
+            fetchOrders(token);
           } catch (err) {
             console.log("release error", err);
             showMessage("error", "Error koneksi saat kirim ke driver.");
@@ -488,9 +481,18 @@
             d.getDate() === now.getDate()
           );
         }).length;
+
+        // ✅ GROUP:
+        // 1) waiting_merchant  -> menunggu resto
+        // 2) selain waiting_merchant & completed -> sedang dikerjakan driver
+        // 3) completed -> riwayat selesai
         const waitingOrders = orders.filter(
           (o) => o.status === "waiting_merchant"
-        ).length;
+        );
+        const driverWorkingOrders = orders.filter(
+          (o) => o.status !== "waiting_merchant" && o.status !== "completed"
+        );
+        const doneOrders = orders.filter((o) => o.status === "completed");
 
         function renderLanding() {
           return (
@@ -782,7 +784,7 @@
                     </div>
                     <div className="kpi-card">
                       <div className="kpi-label">Menunggu resto</div>
-                      <div className="kpi-value">{waitingOrders}</div>
+                      <div className="kpi-value">{waitingOrders.length}</div>
                     </div>
                     <div className="kpi-card">
                       <div className="kpi-label">Total pesanan</div>
@@ -796,7 +798,8 @@
                   >
                     Alur: Customer pesan FOOD → resto lihat di tab Pesanan →
                     klik <b>"Pesanan siap, kirim ke driver"</b> → pesanan
-                    muncul di panel driver.
+                    muncul di panel driver. Saat driver ambil & antar, status di
+                    sini akan berubah sampai <b>Pesanan selesai</b>.
                   </p>
                 </>
               )}
@@ -810,7 +813,7 @@
                       alignItems: "center",
                     }}
                   >
-                    <div className="section-title">Daftar pesanan makanan</div>
+                    <div className="section-title">Pesanan makanan</div>
                     <button
                       className="btn-ghost"
                       onClick={() => {
@@ -822,14 +825,121 @@
                     </button>
                   </div>
 
-                  {orders.length === 0 ? (
+                  {/* 1) Pesanan menunggu resto */}
+                  <p className="section-subtitle">
+                    Pesanan menunggu konfirmasi / persiapan resto
+                  </p>
+                  {waitingOrders.length === 0 ? (
                     <p className="small-text">
-                      Belum ada pesanan food, atau endpoint{" "}
-                      <code>/orders</code> belum mengembalikan data.
+                      Tidak ada pesanan yang menunggu resto. Pesanan siap yang
+                      sudah dikirim ke driver akan muncul di bagian{" "}
+                      <b>Sedang dikerjakan driver</b>.
                     </p>
                   ) : (
                     <div className="orders-list">
-                      {orders
+                      {waitingOrders
+                        .slice()
+                        .reverse()
+                        .map((o) => (
+                          <div key={o.id} className="order-row">
+                            <div className="order-top">
+                              <div>
+                                <div>
+                                  <b>{o.pickup}</b> → {o.destination}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.7rem",
+                                    color: "#9ca3af",
+                                  }}
+                                >
+                                  {new Date(
+                                    o.createdAt
+                                  ).toLocaleString("id-ID", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <div className="badge-service">
+                                  FOOD DELIVERY
+                                </div>
+                                <div
+                                  style={{
+                                    marginTop: "0.2rem",
+                                    fontSize: "0.7rem",
+                                    color: "#a5b4fc",
+                                  }}
+                                >
+                                  Tarif:{" "}
+                                  <b>{formatRupiah(o.price || 0)}</b>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                marginTop: "0.25rem",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: "0.5rem",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "0.7rem",
+                                  color: "#9ca3af",
+                                }}
+                              >
+                                Customer: {o.customerEmail || "-"}
+                                <br />
+                                <span className="pill-status">
+                                  {statusDisplay(o)}
+                                </span>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <button
+                                  className="btn btn-primary"
+                                  style={{
+                                    marginTop: "0.1rem",
+                                    padding: "0.3rem 0.6rem",
+                                    fontSize: "0.75rem",
+                                  }}
+                                  onClick={() => handleRelease(o.id)}
+                                  disabled={loading}
+                                >
+                                  Pesanan siap, kirim ke driver
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* 2) Sedang dikerjakan driver */}
+                  <p
+                    className="section-title"
+                    style={{ marginTop: "0.7rem" }}
+                  >
+                    Sedang dikerjakan driver
+                  </p>
+                  <p className="section-subtitle">
+                    Pesanan yang sudah dikirim ke driver, belum selesai
+                  </p>
+                  {driverWorkingOrders.length === 0 ? (
+                    <p className="small-text">
+                      Tidak ada pesanan yang sedang jalan. Kalau driver sudah
+                      ambil & update status, pesanan akan muncul di sini sampai
+                      selesai.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {driverWorkingOrders
                         .slice()
                         .reverse()
                         .map((o) => (
@@ -895,18 +1005,96 @@
                                   {statusDisplay(o)}
                                 </span>
                               </div>
-                              <div style={{ textAlign: "right" }}>
-                                <button
-                                  className="btn btn-primary"
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* 3) Riwayat selesai */}
+                  <p
+                    className="section-title"
+                    style={{ marginTop: "0.7rem" }}
+                  >
+                    Riwayat pesanan selesai
+                  </p>
+                  <p className="section-subtitle">
+                    Pesanan yang sudah selesai diantar ke customer
+                  </p>
+                  {doneOrders.length === 0 ? (
+                    <p className="small-text">
+                      Belum ada pesanan yang benar-benar selesai. Setelah
+                      driver menekan step terakhir di panel driver, pesanan akan
+                      muncul di sini sebagai riwayat.
+                    </p>
+                  ) : (
+                    <div className="orders-list">
+                      {doneOrders
+                        .slice()
+                        .reverse()
+                        .map((o) => (
+                          <div key={o.id} className="order-row">
+                            <div className="order-top">
+                              <div>
+                                <div>
+                                  <b>{o.pickup}</b> → {o.destination}
+                                </div>
+                                <div
                                   style={{
-                                    padding: "0.3rem 0.6rem",
-                                    fontSize: "0.75rem",
+                                    fontSize: "0.7rem",
+                                    color: "#9ca3af",
                                   }}
-                                  onClick={() => handleRelease(o.id)}
-                                  disabled={loading}
                                 >
-                                  Pesanan siap, kirim ke driver
-                                </button>
+                                  {new Date(
+                                    o.createdAt
+                                  ).toLocaleString("id-ID", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <div className="badge-service">
+                                  FOOD DELIVERY
+                                </div>
+                                <div
+                                  style={{
+                                    marginTop: "0.2rem",
+                                    fontSize: "0.7rem",
+                                    color: "#a5b4fc",
+                                  }}
+                                >
+                                  Tarif:{" "}
+                                  <b>{formatRupiah(o.price || 0)}</b>
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                marginTop: "0.25rem",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: "0.5rem",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontSize: "0.7rem",
+                                  color: "#9ca3af",
+                                }}
+                              >
+                                Customer: {o.customerEmail || "-"}
+                                <br />
+                                Driver: {o.driverEmail || "-"}
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <span className="pill-status">
+                                  {statusDisplay(o)}
+                                </span>
                               </div>
                             </div>
                           </div>
